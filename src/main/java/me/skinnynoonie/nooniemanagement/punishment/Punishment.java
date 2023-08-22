@@ -1,6 +1,8 @@
 package me.skinnynoonie.nooniemanagement.punishment;
 
 import com.google.common.base.Preconditions;
+import me.skinnynoonie.nooniemanagement.util.Duration;
+import me.skinnynoonie.nooniemanagement.util.NameableUserEntity;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,7 +23,6 @@ public final class Punishment {
     private final long duration;
 
     private Punishment(UUID target, UUID issuer, String reason, PunishmentType type, boolean pardoned, UUID pardoner, String pardonReason, long duration) {
-        //Preconditions.checkState((pardoner != null || pardonReason != null) && !pardoned, "Punishment cannot have a pardon reason or pardoner while be un-pardoned.");
         this.occurred = System.currentTimeMillis();
         this.target = target;
         this.issuer = issuer;
@@ -43,14 +44,14 @@ public final class Punishment {
 
     /** @return UUID of the target for this punishment (the punished, the victim, etc.). */
     @Nonnull
-    public UUID getTarget() {
-        return this.target;
+    public NameableUserEntity getTarget() {
+        return new NameableUserEntity(target);
     }
 
     /** @return UUID of the issuer who issued this punishment. Will return null if the issuer is not a player. */
     @Nullable
-    public UUID getIssuer() {
-        return this.issuer;
+    public NameableUserEntity getIssuer() {
+        return new NameableUserEntity(issuer);
     }
 
     /** @return Reason associated with this punishment. */
@@ -79,8 +80,11 @@ public final class Punishment {
 
     /** @return UUID of the pardoner for this punishment. Will return null if the pardoner is not a player. */
     @Nullable
-    public UUID getPardoner() {
-        return this.pardoner;
+    public NameableUserEntity getPardoner() {
+        if(pardoned) {
+            return new NameableUserEntity(pardoner);
+        }
+        return null;
     }
 
     /** @return Reason for this punishment's pardon. */
@@ -90,13 +94,20 @@ public final class Punishment {
     }
 
     /** @return Duration in milliseconds. This will return -1 if this punishment has no duration, or is permanent. */
-    public long getDuration() {
-        return this.duration;
+    public Duration getDuration() {
+        return this.duration < 0 ? Duration.INFINITE : Duration.from(duration);
     }
 
-    /** @return true if this punishment is permanent, otherwise false. Returns true if this punishment has no duration. */
-    public boolean isPermanent() {
-        return this.duration == -1;
+    public boolean isActive() {
+        boolean expired = duration > 0 && occurred + duration > System.currentTimeMillis();
+        // There are ways to simplify this, but I purposely choose not to as this is easily interpreted.
+        if(expired) {
+            return false;
+        }
+        if(pardoned) {
+            return false;
+        }
+        return true;
     }
 
     public static class Builder {
@@ -120,8 +131,11 @@ public final class Punishment {
         public Punishment build() {
             Preconditions.checkNotNull(target, "Target UUID cannot be null!");
             Preconditions.checkNotNull(type, "Type cannot be null!");
-
-            // todo: Add checks to the pardon fields
+            if(pardoned) {
+                if(pardoner != null || pardonReason != null) {
+                    throw new IllegalStateException("Punishment cannot have a pardon reason or pardoner while un-pardoned.");
+                }
+            }
             return new Punishment(
                     target,
                     issuer,
