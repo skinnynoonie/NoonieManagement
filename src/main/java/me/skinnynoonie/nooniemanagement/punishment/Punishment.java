@@ -113,20 +113,15 @@ public final class Punishment {
     public static class Builder {
 
         private UUID target;
-        private UUID issuer;
+        private NameableUserEntity issuer = NameableUserEntity.CONSOLE;
         private String reason;
         private PunishmentType type;
 
-        private boolean pardoned;
-        private UUID pardoner;
+        private boolean pardoned = false;
+        private NameableUserEntity pardoner;
         private String pardonReason;
 
-        private long duration;
-
-        public Builder() {
-            pardoned = false;
-            duration = -1;
-        }
+        private Duration duration = Duration.INFINITE;
 
         public Punishment build() {
             Preconditions.checkNotNull(target, "Target UUID cannot be null!");
@@ -138,13 +133,13 @@ public final class Punishment {
             }
             return new Punishment(
                     target,
-                    issuer,
+                    issuer.getEntityUniqueId(),
                     reason,
                     type,
                     pardoned,
-                    pardoner,
+                    pardoner != null ? pardoner.getEntityUniqueId() : null,
                     pardonReason,
-                    duration
+                    duration.isInfinite() ? -1 : duration.getMillis()
             );
         }
 
@@ -153,7 +148,7 @@ public final class Punishment {
             return this;
         }
 
-        public Builder setIssuer(@Nullable UUID issuer) {
+        public Builder setIssuer(@Nullable NameableUserEntity issuer) {
             this.issuer = issuer;
             return this;
         }
@@ -173,7 +168,7 @@ public final class Punishment {
             return this;
         }
 
-        public Builder setPardoner(UUID pardoner) {
+        public Builder setPardoner(NameableUserEntity pardoner) {
             this.pardoner = pardoner;
             return this;
         }
@@ -183,13 +178,8 @@ public final class Punishment {
             return this;
         }
 
-        public Builder setDuration(long duration) {
+        public Builder setDuration(Duration duration) {
             this.duration = duration;
-            return this;
-        }
-
-        public Builder setPermanent() {
-            this.duration = -1;
             return this;
         }
 

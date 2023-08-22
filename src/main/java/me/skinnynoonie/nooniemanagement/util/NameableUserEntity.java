@@ -9,6 +9,8 @@ import java.util.UUID;
 
 public class NameableUserEntity {
 
+    public static NameableUserEntity CONSOLE = new NameableUserEntity(null);
+
     /**
      * Creates a blocking request to get the UUID of the entity.
      * @param name The name of the entity.
