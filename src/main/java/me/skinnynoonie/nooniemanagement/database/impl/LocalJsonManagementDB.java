@@ -15,8 +15,8 @@ import me.skinnynoonie.nooniemanagement.database.ManagementDatabase;
 import me.skinnynoonie.nooniemanagement.punishment.Punishment;
 import me.skinnynoonie.nooniemanagement.punishment.PunishmentPortfolio;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -56,9 +56,9 @@ public class LocalJsonManagementDB implements ManagementDatabase {
         return true;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public CompletableFuture<Boolean> savePunishmentPortfolio(@NotNull PunishmentPortfolio portfolio) {
+    public CompletableFuture<Boolean> savePunishmentPortfolio(@Nonnull PunishmentPortfolio portfolio) {
         Preconditions.checkNotNull(portfolio, "Portfolio cannot be null!");
 
         return CompletableFuture.supplyAsync(() -> {
@@ -77,9 +77,9 @@ public class LocalJsonManagementDB implements ManagementDatabase {
 
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public CompletableFuture<PunishmentPortfolio> getPunishmentPortfolioByUniqueId(@NotNull UUID uuid) {
+    public CompletableFuture<PunishmentPortfolio> getPunishmentPortfolioByUniqueId(@Nonnull UUID uuid) {
         Preconditions.checkNotNull(uuid, "UUID cannot be null!");
 
         return CompletableFuture.supplyAsync(() -> {
