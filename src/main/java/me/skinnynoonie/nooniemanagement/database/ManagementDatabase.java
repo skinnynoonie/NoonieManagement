@@ -2,39 +2,61 @@ package me.skinnynoonie.nooniemanagement.database;
 
 import me.skinnynoonie.nooniemanagement.punishment.PunishmentPortfolio;
 
-import javax.annotation.Nonnull;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
-public interface ManagementDatabase {
+public class ManagementDatabase {
 
-    /**
-     * Initiates this database. This may have no function, or it may just be a
-     * test connection to see if this database works. This also may create things
-     * in order to make this database work. If this initiation process fails,
-     * this database should be handled in some sort of way. If this database is not
-     * handled correctly, other functions of this database will not function properly.
-     *
-     * @return false if and only if this initiate process fails, otherwise true.
-     */
-    boolean initiate();
+    private final ManagementDatabaseImpl databaseImpl;
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    /**
-     * Saves a {@link me.skinnynoonie.nooniemanagement.punishment.PunishmentPortfolio} to this database asynchronously.
-     *
-     * @param portfolio The portfolio that will be saved to this database.
-     * @return CompletableFuture of true if and only if the portfolio was saved successfully, otherwise false.
-     */
-    @Nonnull
-    CompletableFuture<Boolean> savePunishmentPortfolio(@Nonnull PunishmentPortfolio portfolio);
+    public ManagementDatabase(ManagementDatabaseImpl managementDatabaseImpl) {
+        databaseImpl = managementDatabaseImpl;
+    }
 
-    /**
-     * Attempts to get a {@link me.skinnynoonie.nooniemanagement.punishment.PunishmentPortfolio} from this database.
-     *
-     * @param uuid The UUID of the target.
-     * @return The portfolio if saved, otherwise an empty portfolio.
-     */
-    @Nonnull
-    CompletableFuture<PunishmentPortfolio> getPunishmentPortfolioByUniqueId(@Nonnull UUID uuid);
+    public void initiate() {
+        try {
+            databaseImpl.initiate();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public CompletableFuture<Void> savePunishmentPortfolioAsync(PunishmentPortfolio portfolio) {
+        return future(() -> {
+            try {
+                System.out.println(2);
+                databaseImpl.savePunishmentPortfolio(portfolio);
+            } catch (Exception e) {
+                throw new CompletionException(e);
+            }
+        });
+    }
+
+    public CompletableFuture<PunishmentPortfolio> getPunishmentPortfolioAsync(UUID uuid) {
+        return future(() -> {
+            try {
+                return databaseImpl.getPunishmentPortfolioByUUID(uuid);
+            } catch (Exception e) {
+                throw new CompletionException(e);
+            }
+        });
+    }
+
+    private <T> CompletableFuture<T> future(Supplier<T> runnable) {
+        return CompletableFuture.supplyAsync(runnable, executorService);
+    }
+
+    private CompletableFuture<Void> future(Runnable runnable) {
+        return CompletableFuture.runAsync(runnable, executorService);
+    }
+
+    public ManagementDatabaseImpl getManagementDatabaseImpl() {
+        return this.databaseImpl;
+    }
 
 }

@@ -11,8 +11,4 @@ public record PunishmentPortfolio(UUID uuid, List<Punishment> punishments) {
         Preconditions.checkNotNull(punishments, "Punishments cannot be null inside a portfolio!");
     }
 
-    public List<Punishment> getAllBans() {
-        return List.of();
-    }
-
 }
