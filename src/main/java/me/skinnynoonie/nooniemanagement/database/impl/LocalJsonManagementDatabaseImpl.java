@@ -46,7 +46,7 @@ public class LocalJsonManagementDatabaseImpl implements ManagementDatabaseImpl {
 
     @Override
     public void savePunishmentPortfolio(PunishmentPortfolio portfolio) throws Exception {
-        Preconditions.checkNotNull(portfolio, "Punishment portfolio cannot be null");
+        Preconditions.checkNotNull(portfolio, "Punishment portfolio cannot be null.");
 
         String content = GSON_PARSER.toJson(portfolio);
         File portfolioDestination = new File(punishmentPortfolioDirectory, portfolio.uuid() + ".json");
@@ -57,7 +57,7 @@ public class LocalJsonManagementDatabaseImpl implements ManagementDatabaseImpl {
 
     @Override
     public PunishmentPortfolio getPunishmentPortfolioByUUID(UUID uuid) throws Exception {
-        Preconditions.checkNotNull(uuid, "UUID cannot be null when fetching punishment portfolios");
+        Preconditions.checkNotNull(uuid, "UUID cannot be null when fetching punishment portfolios.");
 
         File possiblePortfolio = new File(punishmentPortfolioDirectory, uuid+".json");
         if(!possiblePortfolio.exists()) {

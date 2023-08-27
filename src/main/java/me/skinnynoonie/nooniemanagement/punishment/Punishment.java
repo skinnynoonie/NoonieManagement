@@ -108,11 +108,11 @@ public final class Punishment {
 
             return new Punishment(
                     target,
-                    issuer.assignedUUID(),
+                    issuer.fetchUUID(),
                     reason,
                     type,
                     pardoned,
-                    pardoner != null ? pardoner.assignedUUID() : null,
+                    pardoner != null ? pardoner.fetchUUID() : null,
                     pardonReason,
                     indefiniteDuration.isInfinite() ? -1 : indefiniteDuration.getMillis()
             );

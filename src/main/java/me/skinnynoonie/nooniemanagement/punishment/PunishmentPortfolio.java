@@ -11,4 +11,12 @@ public record PunishmentPortfolio(UUID uuid, List<Punishment> punishments) {
         Preconditions.checkNotNull(punishments, "Punishments cannot be null inside a portfolio!");
     }
 
+    public Punishment getCurrentBan() {
+        return punishments.stream()
+                .filter(p -> p.getPunishmentType() == PunishmentType.BAN)
+                .filter(Punishment::isActive)
+                .findFirst()
+                .orElse(null);
+    }
+
 }

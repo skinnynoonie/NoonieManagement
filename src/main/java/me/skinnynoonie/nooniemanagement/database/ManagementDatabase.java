@@ -29,7 +29,6 @@ public class ManagementDatabase {
     public CompletableFuture<Void> savePunishmentPortfolioAsync(PunishmentPortfolio portfolio) {
         return future(() -> {
             try {
-                System.out.println(2);
                 databaseImpl.savePunishmentPortfolio(portfolio);
             } catch (Exception e) {
                 throw new CompletionException(e);

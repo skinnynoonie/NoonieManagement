@@ -12,12 +12,12 @@ public class IndefiniteDuration {
     private static final Pattern TIME_PATTERN = Pattern.compile("(\\d+(second|sec|s))|(\\d+(minute|min|m))|(\\d+(hour|hr|h))|(\\d+(day|d))");
 
     public static IndefiniteDuration from(long millis) {
-        Preconditions.checkState(millis >= 0, "Durations cannot be less than 0.");
+        Preconditions.checkState(millis >= 0, "Durations cannot be less than 0. Duration specified in milliseconds: '"+millis+"'.");
         return new IndefiniteDuration(millis);
     }
 
     public static IndefiniteDuration parse(String content) {
-        Preconditions.checkNotNull(content, "content to parse cannot be null!");
+        Preconditions.checkNotNull(content, "Content to parse cannot be null!");
 
         long millis = 0;
         Matcher matcher = TIME_PATTERN.matcher(content);
@@ -50,7 +50,7 @@ public class IndefiniteDuration {
     }
 
     public long getMillis() {
-        Preconditions.checkState(millis >= 0, "Cannot get millis for an INFINITE duration.");
+        Preconditions.checkState(millis >= 0, "Cannot get milliseconds for an INFINITE duration.");
         return millis;
     }
 

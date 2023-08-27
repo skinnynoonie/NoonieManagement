@@ -1,53 +1,40 @@
 package me.skinnynoonie.nooniemanagement;
 
+import dev.jorel.commandapi.CommandAPI;
+import me.skinnynoonie.nooniemanagement.command.CommandManager;
+import me.skinnynoonie.nooniemanagement.config.ConfigurableMessageManager;
+import me.skinnynoonie.nooniemanagement.config.messages.PublicBanAnnouncement;
+import me.skinnynoonie.nooniemanagement.config.organizers.LocalConfigurableMessageOrganizerImpl;
 import me.skinnynoonie.nooniemanagement.database.ManagementDatabase;
 import me.skinnynoonie.nooniemanagement.database.impl.LocalJsonManagementDatabaseImpl;
-import me.skinnynoonie.nooniemanagement.punishment.Punishment;
-import me.skinnynoonie.nooniemanagement.punishment.PunishmentType;
-import me.skinnynoonie.nooniemanagement.util.IndefiniteDuration;
 import me.skinnynoonie.nooniemanagement.util.NameableUser;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.UUID;
 
 public final class NoonieManagement extends JavaPlugin {
 
     private ManagementDatabase managementDatabase;
+    private CommandManager commandManager;
+    private ConfigurableMessageManager configurableMessageManager;
 
     @Override
     public void onEnable() {
         managementDatabase = new ManagementDatabase(new LocalJsonManagementDatabaseImpl(this));
         managementDatabase.initiate();
 
-        UUID target = UUID.fromString("9f01efff-cf7c-44d9-9d01-093a06a9a907");
-        managementDatabase.getPunishmentPortfolioAsync(target)
-                .thenApply(portfolio -> {
-                    Punishment p = new Punishment.Builder()
-                            .setType(PunishmentType.BAN)
-                            .setDuration(IndefiniteDuration.from(500))
-                            .setPardoner(NameableUser.UNKNOWN)
-                            .setPardonReason("Yawn")
-                            .setPardoned(true)
-                            .setReason("XD")
-                            .setTarget(target)
-                            .setIssuer(NameableUser.UNKNOWN)
-                            .build();
-                    portfolio.punishments().add(p);
-                    return portfolio;
-                })
-                .thenAccept(p -> {
-                    System.out.println(3);
-                    managementDatabase.savePunishmentPortfolioAsync(p);
-                })
-                .exceptionally(t -> {
-                    t.printStackTrace();
-                    return null;
-                });
+        commandManager = new CommandManager(managementDatabase);
+        commandManager.registerAllCommands();
+
+        configurableMessageManager = new ConfigurableMessageManager(new LocalConfigurableMessageOrganizerImpl(this));
+        configurableMessageManager.initiate();
+        configurableMessageManager.registerAllMessages();
+
+        System.out.println(new PublicBanAnnouncement(NameableUser.UNKNOWN, NameableUser.UNKNOWN).getFormatted());
 
     }
 
     @Override
     public void onDisable() {
+        CommandAPI.unregister("ban");
     }
 
     public ManagementDatabase getManagementDatabase() {
