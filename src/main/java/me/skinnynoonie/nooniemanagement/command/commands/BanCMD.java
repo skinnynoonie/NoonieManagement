@@ -21,13 +21,11 @@ import me.skinnynoonie.nooniemanagement.util.NameableUser;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
-public class BanCMD extends PunishmentCommand implements ResultingCommandExecutor,  {
+public class BanCMD extends PunishmentCommand implements ResultingCommandExecutor {
 
     public BanCMD(Plugin plugin, ManagementDatabase managementDatabase) {
         super(plugin, managementDatabase);
