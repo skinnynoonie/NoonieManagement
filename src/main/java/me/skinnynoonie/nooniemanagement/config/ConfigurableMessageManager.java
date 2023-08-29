@@ -5,7 +5,7 @@ import me.skinnynoonie.nooniemanagement.config.messages.PublicBanAnnouncement;
 
 import java.util.List;
 
-// todo: move registration outside this class, like into main or a new class.
+// todo: move registration of this plugin's messages outside this class, like into main or a new class. it promotes this class being more concrete.
 public class ConfigurableMessageManager {
 
     private final ConfigurableMessageOrganizerImpl messageOrganizerImpl;
