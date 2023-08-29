@@ -5,6 +5,7 @@ import me.skinnynoonie.nooniemanagement.config.messages.PublicBanAnnouncement;
 
 import java.util.List;
 
+// todo: move registration outside this class, like into main or a new class.
 public class ConfigurableMessageManager {
 
     private final ConfigurableMessageOrganizerImpl messageOrganizerImpl;
