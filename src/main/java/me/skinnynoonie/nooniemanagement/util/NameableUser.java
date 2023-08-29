@@ -11,7 +11,8 @@ import java.util.UUID;
  * May create a blocking web request to get info if not cached already.
  */
 public final class NameableUser {
-
+    
+    // todo: Make these a Pattern, so you match with Pattern#matcher or something like that.
     private final static String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
     private final static String MINECRAFT_USERNAME_PATTERN = "^\\w{2,16}$";
 
@@ -36,6 +37,7 @@ public final class NameableUser {
         return NameableUser.UNKNOWN;
     }
 
+    // todo: Move this down wtf lol
     public void loadAndCache() {
         fetchUUID();
         fetchUsername();
