@@ -6,7 +6,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import java.util.HashMap;
 
 public abstract class ConfigurableMessage {
-
+    // todo: This can be moved into the actual implementation, provides protection to this variable, and clutter of ConfigurableMessages from other external sources.
     public static final HashMap<Class<? extends ConfigurableMessage>, String> MESSAGE_VALUES = new HashMap<>();
 
     protected abstract String getFormatted();
