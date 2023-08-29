@@ -65,7 +65,7 @@ public class LocalJsonManagementDatabaseImpl implements ManagementDatabaseImpl {
         }
         String content = Files.readString(possiblePortfolio.toPath());
         return GSON_PARSER.fromJson(content, PunishmentPortfolio.class);
-    }
+    } //todo: make sure this gson thing doesn't return null.
 
     private static class PortfolioSerializer implements JsonSerializer<PunishmentPortfolio>, JsonDeserializer<PunishmentPortfolio> {
 
