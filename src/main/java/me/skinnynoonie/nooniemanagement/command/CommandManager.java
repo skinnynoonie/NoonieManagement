@@ -7,6 +7,8 @@ import org.bukkit.plugin.Plugin;
 import java.util.ArrayList;
 import java.util.List;
 
+// Todo: Honestly just remove this class, register everything in the main class for now.
+
 public class CommandManager {
 
     private final Plugin plugin;
