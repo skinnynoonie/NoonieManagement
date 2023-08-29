@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
+// todo: make it so the file for this is like this: "plugins/MyPlugin/permissions/".
 public class LocalPermissionManagerImpl implements EnumPermissionManagerImpl {
 
     private final Plugin plugin;
