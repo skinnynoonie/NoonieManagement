@@ -11,7 +11,7 @@ public record PunishmentPortfolio(UUID uuid, List<Punishment> punishments) {
         Preconditions.checkNotNull(punishments, "Punishments cannot be null inside a portfolio!");
     }
 
-    // todo: make a pricate method like getPunishmentsOfType(Type), and getCurrentPunishmentOfType(Type)
+    // todo: make a private method like getPunishmentsOfType(Type), and getCurrentPunishmentOfType(Type)
     // todo: then wrap these with getCurrentBan, Mute, etc, getAllBans, gwtAllMutes, etc. 
     public Punishment getCurrentBan() {
         return punishments.stream()
