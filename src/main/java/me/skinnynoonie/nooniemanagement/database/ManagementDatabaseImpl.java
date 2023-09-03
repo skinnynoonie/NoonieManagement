@@ -11,5 +11,4 @@ public interface ManagementDatabaseImpl {
     void savePunishmentPortfolio(PunishmentPortfolio portfolio) throws Exception;
 
     PunishmentPortfolio getPunishmentPortfolioByUUID(UUID uuid) throws Exception;
-
 }

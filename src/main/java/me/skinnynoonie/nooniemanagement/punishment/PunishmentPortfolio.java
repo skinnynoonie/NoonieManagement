@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public record PunishmentPortfolio(UUID uuid, List<Punishment> punishments) {
 
@@ -11,14 +12,26 @@ public record PunishmentPortfolio(UUID uuid, List<Punishment> punishments) {
         Preconditions.checkNotNull(punishments, "Punishments cannot be null inside a portfolio!");
     }
 
-    // todo: make a private method like getPunishmentsOfType(Type), and getCurrentPunishmentOfType(Type)
-    // todo: then wrap these with getCurrentBan, Mute, etc, getAllBans, gwtAllMutes, etc. 
     public Punishment getCurrentBan() {
+        return getCurrentPunishmentOfType(PunishmentType.BAN);
+    }
+
+    public List<Punishment> getAllBans() {
+        return getCurrentPunishmentsOfType(PunishmentType.BAN);
+    }
+
+    private Punishment getCurrentPunishmentOfType(PunishmentType type) {
         return punishments.stream()
-                .filter(p -> p.getPunishmentType() == PunishmentType.BAN)
+                .filter(p -> p.getPunishmentType() == type)
                 .filter(Punishment::isActive)
                 .findFirst()
                 .orElse(null);
+    }
+
+    private List<Punishment> getCurrentPunishmentsOfType(PunishmentType type) {
+        return punishments.stream()
+                .filter(p -> p.getPunishmentType() == type)
+                .collect(Collectors.toList());
     }
 
 }

@@ -17,6 +17,8 @@ import me.skinnynoonie.nooniemanagement.punishment.PunishmentPortfolio;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
@@ -31,11 +33,9 @@ public class LocalJsonManagementDatabaseImpl implements ManagementDatabaseImpl {
             .registerTypeAdapter(PunishmentPortfolio.class, new PortfolioSerializer())
             .create();
 
-    private final Plugin plugin;
     private final File punishmentPortfolioDirectory;
 
     public LocalJsonManagementDatabaseImpl(Plugin plugin) {
-        this.plugin = plugin;
         punishmentPortfolioDirectory = new File(plugin.getDataFolder(), "portfolios/");
     }
 
@@ -47,25 +47,32 @@ public class LocalJsonManagementDatabaseImpl implements ManagementDatabaseImpl {
     @Override
     public void savePunishmentPortfolio(PunishmentPortfolio portfolio) throws Exception {
         Preconditions.checkNotNull(portfolio, "Punishment portfolio cannot be null.");
-
         String content = GSON_PARSER.toJson(portfolio);
         File portfolioDestination = new File(punishmentPortfolioDirectory, portfolio.uuid() + ".json");
-        PrintWriter printWriter = new PrintWriter(portfolioDestination);
-        printWriter.print(content);
-        printWriter.close();
+        printContent(content, portfolioDestination);
     }
 
     @Override
     public PunishmentPortfolio getPunishmentPortfolioByUUID(UUID uuid) throws Exception {
         Preconditions.checkNotNull(uuid, "UUID cannot be null when fetching punishment portfolios.");
-
         File possiblePortfolio = new File(punishmentPortfolioDirectory, uuid+".json");
-        if(!possiblePortfolio.exists()) {
+        if(!possiblePortfolio.exists())
             return new PunishmentPortfolio(uuid, new ArrayList<>());
-        }
+        return attemptPortfolioParse(possiblePortfolio);
+    }
+
+    private void printContent(String content, File destination) throws FileNotFoundException {
+        PrintWriter printWriter = new PrintWriter(destination);
+        printWriter.print(content);
+        printWriter.close();
+    }
+
+    private PunishmentPortfolio attemptPortfolioParse(File possiblePortfolio) throws IOException {
         String content = Files.readString(possiblePortfolio.toPath());
+        PunishmentPortfolio portfolio = GSON_PARSER.fromJson(content, PunishmentPortfolio.class);
+        Preconditions.checkState(portfolio != null, "Portfolio was parsed incorrectly! Content used for parsing: '"+content+"'.");
         return GSON_PARSER.fromJson(content, PunishmentPortfolio.class);
-    } //todo: make sure this gson thing doesn't return null.
+    }
 
     private static class PortfolioSerializer implements JsonSerializer<PunishmentPortfolio>, JsonDeserializer<PunishmentPortfolio> {
 

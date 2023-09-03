@@ -40,9 +40,9 @@ public class IndefiniteDurationArgument {
     private static IndefiniteDuration getHandledIndefiniteDuration(String input) throws CustomArgument.CustomArgumentException {
         IndefiniteDuration indefiniteDuration;
         try {
-            indefiniteDuration = IndefiniteDuration.parse(input);
+            indefiniteDuration = IndefiniteDuration.parseString(input);
         } catch (NullPointerException e) {
-            indefiniteDuration = IndefiniteDuration.from(0);
+            indefiniteDuration = IndefiniteDuration.fromMillis(0);
         }
         if(indefiniteDuration.getMillis() <= 0) {
             throw CustomArgument.CustomArgumentException.fromString("Invalid duration! Input: '"+input+"'.");

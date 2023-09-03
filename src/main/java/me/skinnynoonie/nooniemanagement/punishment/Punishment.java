@@ -37,11 +37,11 @@ public final class Punishment {
     }
 
     public NameableUser getTarget() {
-        return new NameableUser(target);
+        return NameableUser.fromUUID(target);
     }
 
     public NameableUser getIssuer() {
-        return new NameableUser(issuer);
+        return NameableUser.fromUUID(issuer);
     }
 
     public String getReason() {
@@ -64,7 +64,7 @@ public final class Punishment {
 
     public NameableUser getPardoner() {
         if(pardoned) {
-            return new NameableUser(pardoner);
+            return NameableUser.fromUUID(pardoner);
         }
         return null;
     }
@@ -74,7 +74,7 @@ public final class Punishment {
     }
 
     public IndefiniteDuration getDurationMillis() {
-        return this.durationMillis < 0 ? IndefiniteDuration.INFINITE : IndefiniteDuration.from(durationMillis);
+        return this.durationMillis < 0 ? IndefiniteDuration.INFINITE : IndefiniteDuration.fromMillis(durationMillis);
     }
 
     public boolean isActive() {

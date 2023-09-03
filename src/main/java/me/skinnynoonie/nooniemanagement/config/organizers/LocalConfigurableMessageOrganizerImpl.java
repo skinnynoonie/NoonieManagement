@@ -1,5 +1,6 @@
 package me.skinnynoonie.nooniemanagement.config.organizers;
 
+import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.config.ConfigurableMessage;
 import me.skinnynoonie.nooniemanagement.config.ConfigurableMessageOrganizerImpl;
 import me.skinnynoonie.nooniemanagement.config.DefaultMessageConfigValue;
@@ -27,7 +28,7 @@ public class LocalConfigurableMessageOrganizerImpl implements ConfigurableMessag
 
     @Override
     public void register(Class<? extends ConfigurableMessage> configurableMessage) throws Exception {
-        checkIfCorrectlyAnnotated(configurableMessage);
+        checkIfNullAndCorrectlyAnnotated(configurableMessage);
         File messageFile = new File(messagesDir, configurableMessage.getSimpleName()+".txt");
         printDefaultValueIfNonExistent(messageFile, configurableMessage);
         String content = Files.readString(messageFile.toPath());
@@ -40,7 +41,8 @@ public class LocalConfigurableMessageOrganizerImpl implements ConfigurableMessag
         register(configurableMessage);
     }
 
-    private void checkIfCorrectlyAnnotated(Class<?> clazz) {
+    private void checkIfNullAndCorrectlyAnnotated(Class<?> clazz) {
+        Preconditions.checkNotNull(clazz, "Class cannot be null!");
         if(!clazz.isAnnotationPresent(DefaultMessageConfigValue.class)) {
             throw new IllegalStateException("Configurable message MUST be annotated with '@DefaultMessageConfigValue'. Class with missing annotation: '"+clazz.getName()+"'.");
         }

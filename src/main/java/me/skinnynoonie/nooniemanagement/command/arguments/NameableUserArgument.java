@@ -15,8 +15,7 @@ public class NameableUserArgument {
         return new CustomArgument<>(new StringArgument(nodeName), info -> {
             String input = info.input();
             return getNameableUser(input);
-        }
-        ).replaceSuggestions(getOnlinePlayerSuggestions());
+        }).replaceSuggestions(getOnlinePlayerSuggestions());
     }
 
     private static NameableUser getNameableUser(String input) throws CustomArgument.CustomArgumentException {
@@ -29,10 +28,9 @@ public class NameableUserArgument {
 
     private static ArgumentSuggestions<CommandSender> getOnlinePlayerSuggestions() {
         return ArgumentSuggestions.strings(
-                Bukkit.getOnlinePlayers().stream()
+                (info) -> Bukkit.getOnlinePlayers().stream()
                         .map(Player::getName)
-                        .toArray(String[]::new)
-        );
+                        .toArray(String[]::new));
     }
 
 }

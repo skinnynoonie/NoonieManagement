@@ -11,12 +11,12 @@ public class IndefiniteDuration {
 
     private static final Pattern TIME_PATTERN = Pattern.compile("(\\d+(second|sec|s))|(\\d+(minute|min|m))|(\\d+(hour|hr|h))|(\\d+(day|d))");
 
-    public static IndefiniteDuration from(long millis) {
+    public static IndefiniteDuration fromMillis(long millis) {
         Preconditions.checkState(millis >= 0, "Durations cannot be less than 0. Duration specified in milliseconds: '"+millis+"'.");
         return new IndefiniteDuration(millis);
     }
 
-    public static IndefiniteDuration parse(String content) {
+    public static IndefiniteDuration parseString(String content) {
         Preconditions.checkNotNull(content, "Content to parse cannot be null!");
 
         long millis = 0;
