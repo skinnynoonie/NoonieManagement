@@ -15,6 +15,10 @@ public abstract class ConfigurableMessage {
         return MiniMessage.miniMessage().deserialize(getFormatted());
     }
 
+    public String getAsString() {
+        return getFormatted();
+    }
+
     public String getUnformatted() {
         return MESSAGE_VALUES.get(getClass());
     }

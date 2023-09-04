@@ -16,8 +16,16 @@ public record PunishmentPortfolio(UUID uuid, List<Punishment> punishments) {
         return getCurrentPunishmentOfType(PunishmentType.BAN);
     }
 
+    public Punishment getCurrentMute() {
+        return getCurrentPunishmentOfType(PunishmentType.MUTE);
+    }
+
     public List<Punishment> getAllBans() {
         return getCurrentPunishmentsOfType(PunishmentType.BAN);
+    }
+
+    public List<Punishment> getAllMutes() {
+        return getCurrentPunishmentsOfType(PunishmentType.MUTE);
     }
 
     private Punishment getCurrentPunishmentOfType(PunishmentType type) {

@@ -10,14 +10,14 @@ import dev.jorel.commandapi.executors.ResultingCommandExecutor;
 import me.skinnynoonie.nooniemanagement.command.CustomCommand;
 import me.skinnynoonie.nooniemanagement.command.arguments.IndefiniteDurationArgument;
 import me.skinnynoonie.nooniemanagement.command.arguments.NameableUserArgument;
-import me.skinnynoonie.nooniemanagement.config.messages.AlreadyBannedErrorMessage;
-import me.skinnynoonie.nooniemanagement.config.messages.BanScreenMessage;
+import me.skinnynoonie.nooniemanagement.config.messages.AlreadyMutedErrorMessage;
 import me.skinnynoonie.nooniemanagement.config.messages.CannotPunishPlayerMessage;
 import me.skinnynoonie.nooniemanagement.config.messages.CannotPunishSelfMessage;
 import me.skinnynoonie.nooniemanagement.config.messages.DefaultPunishmentReason;
 import me.skinnynoonie.nooniemanagement.config.messages.InternalErrorMessage;
-import me.skinnynoonie.nooniemanagement.config.messages.PublicBanAnnouncement;
-import me.skinnynoonie.nooniemanagement.config.messages.SilentBanAnnouncement;
+import me.skinnynoonie.nooniemanagement.config.messages.MuteReminderMessage;
+import me.skinnynoonie.nooniemanagement.config.messages.PublicMuteAnnouncement;
+import me.skinnynoonie.nooniemanagement.config.messages.SilentMuteAnnouncement;
 import me.skinnynoonie.nooniemanagement.database.ManagementDatabase;
 import me.skinnynoonie.nooniemanagement.permission.permissions.CommandPermissions;
 import me.skinnynoonie.nooniemanagement.permission.permissions.PunishmentPermissions;
@@ -31,41 +31,39 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
-public record BanCMD(Plugin plugin, ManagementDatabase managementDatabase) implements ResultingCommandExecutor, CustomCommand {
+public record MuteCMD(Plugin plugin, ManagementDatabase managementDatabase) implements ResultingCommandExecutor, CustomCommand {
 
     @Override
     public void register() {
         unregister();
-        new CommandTree("ban")
-                .withAliases("banish")
-                .withUsage("/ban [-silent] <player> <duration> <reason>")
-                .withShortDescription("Ban a player.")
-                .withFullDescription("Bans a player with reason and a specified duration. By default, durations are permanent, and reasons will be \""
+        new CommandTree("mute")
+                .withUsage("/mute [-silent] <player> <duration> <reason>")
+                .withShortDescription("Mute a player.")
+                .withFullDescription("Mutes a player with reason and a specified duration. By default, durations are permanent, and reasons will be \""
                         + new DefaultPunishmentReason().getAsString() + "\".")
-                .withPermission(CommandPermissions.BAN_COMMAND.getPermission())
+                .withPermission(CommandPermissions.MUTE_COMMAND.getPermission())
                 .then(new MultiLiteralArgument("silent", "-silent", "-s")
                         .then(NameableUserArgument.get("target")
-                            .then(IndefiniteDurationArgument.get("duration").setOptional(true)
+                                .then(IndefiniteDurationArgument.get("duration").setOptional(true)
+                                        .then(new GreedyStringArgument("reason").setOptional(true)
+                                                .executes(this)
+                                        ))))
+                .then(NameableUserArgument.get("target")
+                        .then(IndefiniteDurationArgument.get("duration").setOptional(true)
                                 .then(new GreedyStringArgument("reason").setOptional(true)
                                         .executes(this)
-                                ))))
-                .then(NameableUserArgument.get("target")
-                    .then(IndefiniteDurationArgument.get("duration").setOptional(true)
-                        .then(new GreedyStringArgument("reason").setOptional(true)
-                            .executes(this)
-                        )))
+                                )))
                 .register();
     }
 
     @Override
     public void unregister() {
-        CommandAPI.unregister("ban");
+        CommandAPI.unregister("mute");
     }
 
     @Override
@@ -87,14 +85,14 @@ public record BanCMD(Plugin plugin, ManagementDatabase managementDatabase) imple
                 return;
             }
 
-            boolean targetHasBanBypass = PlayerUtils.luckPermHasPermission(targetUUID, PunishmentPermissions.BYPASS_BANS.getPermission());
-            if(targetHasBanBypass) {
+            boolean targetHasMuteBypass = PlayerUtils.luckPermHasPermission(targetUUID, PunishmentPermissions.BYPASS_MUTES.getPermission());
+            if(targetHasMuteBypass) {
                 sender.sendMessage(new CannotPunishPlayerMessage().getAsComponent());
                 return;
             }
 
             Punishment punishment = new Punishment.Builder()
-                    .setType(PunishmentType.BAN)
+                    .setType(PunishmentType.MUTE)
                     .setIssuer(issuer)
                     .setTarget(targetUUID)
                     .setDuration(indefiniteDuration)
@@ -103,9 +101,9 @@ public record BanCMD(Plugin plugin, ManagementDatabase managementDatabase) imple
 
             try {
                 PunishmentPortfolio portfolio = managementDatabase.getPunishmentPortfolioAsync(targetUUID).get();
-                boolean targetIsAlreadyBanned = portfolio.getCurrentBan() != null;
-                if(targetIsAlreadyBanned) {
-                    sender.sendMessage(new AlreadyBannedErrorMessage().getAsComponent());
+                boolean targetIsAlreadyMuted = portfolio.getCurrentMute() != null;
+                if(targetIsAlreadyMuted) {
+                    sender.sendMessage(new AlreadyMutedErrorMessage().getAsComponent());
                     return;
                 }
                 portfolio.punishments().add(punishment);
@@ -116,7 +114,7 @@ public record BanCMD(Plugin plugin, ManagementDatabase managementDatabase) imple
                 return;
             }
 
-            kickTargetSynchronouslyIfOnline(target, punishment);
+            indicateMuteToTargetIfOnline(target, punishment);
 
             broadcastMessageLog(silent, target, issuer);
 
@@ -126,22 +124,19 @@ public record BanCMD(Plugin plugin, ManagementDatabase managementDatabase) imple
 
     private void broadcastMessageLog(boolean silent, NameableUser target, NameableUser issuer) {
         if(silent) {
-            Component announcement = new SilentBanAnnouncement(target, issuer).getAsComponent();
+            Component announcement = new SilentMuteAnnouncement(target, issuer).getAsComponent();
             Bukkit.broadcast(announcement, PunishmentPermissions.VIEW_SILENT_PUNISHMENTS.getPermission());
         } else {
-            Component announcement = new PublicBanAnnouncement(target, issuer).getAsComponent();
+            Component announcement = new PublicMuteAnnouncement(target, issuer).getAsComponent();
             Bukkit.broadcast(announcement);
         }
     }
 
-    private void kickTargetSynchronouslyIfOnline(NameableUser target, Punishment punishment) {
+    private void indicateMuteToTargetIfOnline(NameableUser target, Punishment punishment) {
         Bukkit.getScheduler().runTask(plugin, () -> {
             Player possibleOnlinePlayer = Bukkit.getPlayer(target.fetchUUID());
             if(possibleOnlinePlayer == null) return;
-            possibleOnlinePlayer.kick(
-                    new BanScreenMessage(punishment).getAsComponent(),
-                    PlayerKickEvent.Cause.BANNED
-            );
+            possibleOnlinePlayer.sendMessage(new MuteReminderMessage(punishment).getAsComponent());
         });
     }
 

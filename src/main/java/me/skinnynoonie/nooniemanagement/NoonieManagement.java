@@ -1,12 +1,15 @@
 package me.skinnynoonie.nooniemanagement;
 
 import me.skinnynoonie.nooniemanagement.command.commands.BanCMD;
+import me.skinnynoonie.nooniemanagement.command.commands.MuteCMD;
 import me.skinnynoonie.nooniemanagement.command.commands.UnbanCMD;
+import me.skinnynoonie.nooniemanagement.command.commands.UnmuteCMD;
 import me.skinnynoonie.nooniemanagement.config.ConfigurableMessage;
 import me.skinnynoonie.nooniemanagement.config.ConfigurableMessageManager;
 import me.skinnynoonie.nooniemanagement.config.organizers.LocalConfigurableMessageOrganizerImpl;
 import me.skinnynoonie.nooniemanagement.database.ManagementDatabase;
 import me.skinnynoonie.nooniemanagement.database.impl.LocalJsonManagementDatabaseImpl;
+import me.skinnynoonie.nooniemanagement.listeners.ChatListener;
 import me.skinnynoonie.nooniemanagement.listeners.PlayerConnectionListener;
 import me.skinnynoonie.nooniemanagement.permission.EnumPermissionManager;
 import me.skinnynoonie.nooniemanagement.permission.impl.LocalPermissionManagerImpl;
@@ -66,11 +69,14 @@ public final class NoonieManagement extends JavaPlugin {
     private void runCommandOperations() {
         new BanCMD(this, managementDatabase).register();
         new UnbanCMD(this, managementDatabase).register();
+        new MuteCMD(this, managementDatabase).register();
+        new UnmuteCMD(this, managementDatabase).register();
     }
 
     private void runListenerOperations() {
         PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(new PlayerConnectionListener(managementDatabase), this);
+        pluginManager.registerEvents(new ChatListener(managementDatabase), this);
     }
 
 

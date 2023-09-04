@@ -5,6 +5,7 @@ import me.skinnynoonie.nooniemanagement.permission.EnumPermission;
 public enum PunishmentPermissions implements EnumPermission {
 
     BYPASS_BANS("nooniemanagement.bypass_ban"),
+    BYPASS_MUTES("nooniemanagement.bypass_mute"),
     VIEW_SILENT_PUNISHMENTS("nooniemanagement.view_silent");
 
     private final String defaultPermission;

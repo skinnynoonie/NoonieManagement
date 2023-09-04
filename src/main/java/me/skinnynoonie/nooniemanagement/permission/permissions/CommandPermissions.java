@@ -5,7 +5,9 @@ import me.skinnynoonie.nooniemanagement.permission.EnumPermission;
 public enum CommandPermissions implements EnumPermission {
 
     BAN_COMMAND("nooniemanagement.ban"),
-    UNBAN_COMMAND("nooniemanagement.unban");
+    UNBAN_COMMAND("nooniemanagement.unban"),
+    MUTE_COMMAND("nooniemanagement.mute"),
+    UNMUTE_COMMAND("nooniemanagement.unmute");
 
     private final String defaultPermission;
     private String permission;

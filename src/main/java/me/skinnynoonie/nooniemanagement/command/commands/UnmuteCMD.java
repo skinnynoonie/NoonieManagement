@@ -11,9 +11,9 @@ import me.skinnynoonie.nooniemanagement.command.CustomCommand;
 import me.skinnynoonie.nooniemanagement.command.arguments.NameableUserArgument;
 import me.skinnynoonie.nooniemanagement.config.messages.DefaultPunishmentReason;
 import me.skinnynoonie.nooniemanagement.config.messages.InternalErrorMessage;
-import me.skinnynoonie.nooniemanagement.config.messages.NotBannedErrorMessage;
-import me.skinnynoonie.nooniemanagement.config.messages.PublicUnbanAnnouncement;
-import me.skinnynoonie.nooniemanagement.config.messages.SilentUnbanAnnouncement;
+import me.skinnynoonie.nooniemanagement.config.messages.NotMutedErrorMessage;
+import me.skinnynoonie.nooniemanagement.config.messages.PublicUnmuteAnnouncement;
+import me.skinnynoonie.nooniemanagement.config.messages.SilentUnmuteAnnouncement;
 import me.skinnynoonie.nooniemanagement.database.ManagementDatabase;
 import me.skinnynoonie.nooniemanagement.permission.permissions.CommandPermissions;
 import me.skinnynoonie.nooniemanagement.permission.permissions.PunishmentPermissions;
@@ -27,33 +27,32 @@ import org.bukkit.plugin.Plugin;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
-public record UnbanCMD(Plugin plugin, ManagementDatabase managementDatabase) implements ResultingCommandExecutor, CustomCommand {
+public record UnmuteCMD(Plugin plugin, ManagementDatabase managementDatabase) implements CustomCommand, ResultingCommandExecutor {
 
     @Override
     public void register() {
         unregister();
-        new CommandTree("unban")
-                .withAliases("pardon")
-                .withUsage("/unban [-silent] <player> <reason>")
-                .withShortDescription("Unbans a player.")
-                .withFullDescription("Unbans a player with reason. Reasons will be \""
+        new CommandTree("unmute")
+                .withUsage("/unmute [-silent] <player> <reason>")
+                .withShortDescription("Unmutes a player.")
+                .withFullDescription("Unmutes a player with reason. Reasons will be \""
                         + new DefaultPunishmentReason().getAsString() + "\" by default.")
-                .withPermission(CommandPermissions.UNBAN_COMMAND.getPermission())
+                .withPermission(CommandPermissions.UNMUTE_COMMAND.getPermission())
                 .then(new MultiLiteralArgument("silent", "-silent", "-s")
                         .then(NameableUserArgument.get("target")
                                 .then(new GreedyStringArgument("reason").setOptional(true)
-                                                .executes(this)
+                                        .executes(this)
                                 )))
                 .then(NameableUserArgument.get("target")
                         .then(new GreedyStringArgument("reason").setOptional(true)
-                                        .executes(this)
+                                .executes(this)
                         ))
                 .register();
     }
 
     @Override
     public void unregister() {
-        CommandAPI.unregister("unban");
+        CommandAPI.unregister("unmute");
     }
 
     @Override
@@ -70,12 +69,12 @@ public record UnbanCMD(Plugin plugin, ManagementDatabase managementDatabase) imp
 
             try {
                 PunishmentPortfolio portfolio = managementDatabase.getPunishmentPortfolioAsync(targetUUID).get();
-                boolean targetIsNotBanned = portfolio.getCurrentBan() == null;
-                if(targetIsNotBanned) {
-                    sender.sendMessage(new NotBannedErrorMessage().getAsComponent());
+                boolean targetIsNotMuted = portfolio.getCurrentMute() == null;
+                if(targetIsNotMuted) {
+                    sender.sendMessage(new NotMutedErrorMessage().getAsComponent());
                     return;
                 }
-                portfolio.getCurrentBan().pardon(issuer.fetchUUID(), reason);
+                portfolio.getCurrentMute().pardon(issuer.fetchUUID(), reason);
                 managementDatabase.savePunishmentPortfolioAsync(portfolio).join();
             } catch (InterruptedException | ExecutionException e) {
                 sender.sendMessage(new InternalErrorMessage().getAsComponent());
@@ -91,11 +90,12 @@ public record UnbanCMD(Plugin plugin, ManagementDatabase managementDatabase) imp
 
     private void broadcastMessageLog(boolean silent, NameableUser target, NameableUser issuer) {
         if(silent) {
-            Component announcement = new SilentUnbanAnnouncement(target, issuer).getAsComponent();
+            Component announcement = new SilentUnmuteAnnouncement(target, issuer).getAsComponent();
             Bukkit.broadcast(announcement, PunishmentPermissions.VIEW_SILENT_PUNISHMENTS.getPermission());
         } else {
-            Component announcement = new PublicUnbanAnnouncement(target, issuer).getAsComponent();
+            Component announcement = new PublicUnmuteAnnouncement(target, issuer).getAsComponent();
             Bukkit.broadcast(announcement);
         }
     }
+
 }
