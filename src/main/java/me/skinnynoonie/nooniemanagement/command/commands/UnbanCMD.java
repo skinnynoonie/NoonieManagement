@@ -63,6 +63,8 @@ public record UnbanCMD(Plugin plugin, ManagementDatabase managementDatabase) imp
         NameableUser target = (NameableUser) args.get("target");
         String reason = (String) args.getOptional("reason").orElse(new DefaultPunishmentReason().getAsString());
 
+
+
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 
             target.loadAndCache();

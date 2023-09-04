@@ -13,16 +13,10 @@ import me.skinnynoonie.nooniemanagement.util.IndefiniteDuration;
         <white>Duration: <aqua>{duration}
         """
 )
-public class BanScreenMessage extends ConfigurableMessage {
-
-    private final Punishment punishment;
-
-    public BanScreenMessage(Punishment punishment) {
-        this.punishment = punishment;
-    }
+public record BanScreenMessage(Punishment punishment) implements ConfigurableMessage {
 
     @Override
-    protected String getFormatted() {
+    public String getFormatted() {
         String displayDuration = getDisplayDurationLeft(punishment.getDurationMillis());
         String displayReason = punishment.getReason();
         return getUnformatted()

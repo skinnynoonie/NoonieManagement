@@ -4,10 +4,10 @@ import me.skinnynoonie.nooniemanagement.config.ConfigurableMessage;
 import me.skinnynoonie.nooniemanagement.config.DefaultMessageConfigValue;
 
 @DefaultMessageConfigValue(defaultValue = "<red>An internal error has occurred while attempting this task.")
-public class InternalErrorMessage extends ConfigurableMessage {
+public class InternalErrorMessage implements ConfigurableMessage {
 
     @Override
-    protected String getFormatted() {
+    public String getFormatted() {
         return getUnformatted();
     }
 

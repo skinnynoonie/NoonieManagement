@@ -4,10 +4,10 @@ import me.skinnynoonie.nooniemanagement.config.ConfigurableMessage;
 import me.skinnynoonie.nooniemanagement.config.DefaultMessageConfigValue;
 
 @DefaultMessageConfigValue(defaultValue = "<red>You cannot punish yourself.")
-public class SelfPunishmentErrorMessage extends ConfigurableMessage {
+public class SelfPunishmentErrorMessage implements ConfigurableMessage {
 
     @Override
-    protected String getFormatted() {
+    public String getFormatted() {
         return getUnformatted();
     }
 

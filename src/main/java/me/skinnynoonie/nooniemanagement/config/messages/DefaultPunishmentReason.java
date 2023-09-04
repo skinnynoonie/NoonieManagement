@@ -4,10 +4,10 @@ import me.skinnynoonie.nooniemanagement.config.ConfigurableMessage;
 import me.skinnynoonie.nooniemanagement.config.DefaultMessageConfigValue;
 
 @DefaultMessageConfigValue(defaultValue = "No reason specified")
-public class DefaultPunishmentReason extends ConfigurableMessage {
+public class DefaultPunishmentReason implements ConfigurableMessage {
 
     @Override
-    protected String getFormatted() {
+    public String getFormatted() {
         return getUnformatted();
     }
 

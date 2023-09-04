@@ -6,8 +6,10 @@ import me.skinnynoonie.nooniemanagement.config.messages.MuteReminderMessage;
 import me.skinnynoonie.nooniemanagement.database.ManagementDatabase;
 import me.skinnynoonie.nooniemanagement.punishment.Punishment;
 import me.skinnynoonie.nooniemanagement.punishment.PunishmentPortfolio;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.server.BroadcastMessageEvent;
 
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -24,6 +26,14 @@ public record ChatListener(ManagementDatabase managementDatabase) implements Lis
             e.printStackTrace();
             event.setCancelled(true);
             event.getPlayer().sendMessage(new InternalErrorMessage().getAsComponent());
+        }
+    }
+
+    @EventHandler
+    public void onBroadcast(BroadcastMessageEvent event) {
+        boolean consoleDidNotReceiveMessage = !event.getRecipients().contains(Bukkit.getConsoleSender());
+        if(consoleDidNotReceiveMessage) {
+            Bukkit.getConsoleSender().sendMessage(event.message());
         }
     }
 

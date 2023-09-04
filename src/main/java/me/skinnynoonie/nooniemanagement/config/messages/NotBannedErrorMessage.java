@@ -4,10 +4,10 @@ import me.skinnynoonie.nooniemanagement.config.ConfigurableMessage;
 import me.skinnynoonie.nooniemanagement.config.DefaultMessageConfigValue;
 
 @DefaultMessageConfigValue(defaultValue = "<red>That player is not banned!")
-public class NotBannedErrorMessage extends ConfigurableMessage {
+public class NotBannedErrorMessage implements ConfigurableMessage {
 
     @Override
-    protected String getFormatted() {
+    public String getFormatted() {
         return getUnformatted();
     }
 

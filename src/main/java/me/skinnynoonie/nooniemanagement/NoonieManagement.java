@@ -1,6 +1,7 @@
 package me.skinnynoonie.nooniemanagement;
 
 import me.skinnynoonie.nooniemanagement.command.commands.BanCMD;
+import me.skinnynoonie.nooniemanagement.command.commands.KickCMD;
 import me.skinnynoonie.nooniemanagement.command.commands.MuteCMD;
 import me.skinnynoonie.nooniemanagement.command.commands.UnbanCMD;
 import me.skinnynoonie.nooniemanagement.command.commands.UnmuteCMD;
@@ -71,6 +72,7 @@ public final class NoonieManagement extends JavaPlugin {
         new UnbanCMD(this, managementDatabase).register();
         new MuteCMD(this, managementDatabase).register();
         new UnmuteCMD(this, managementDatabase).register();
+        new KickCMD(this, managementDatabase).register();
     }
 
     private void runListenerOperations() {

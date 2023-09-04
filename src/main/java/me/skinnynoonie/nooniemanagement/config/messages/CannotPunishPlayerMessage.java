@@ -4,10 +4,10 @@ import me.skinnynoonie.nooniemanagement.config.ConfigurableMessage;
 import me.skinnynoonie.nooniemanagement.config.DefaultMessageConfigValue;
 
 @DefaultMessageConfigValue(defaultValue =  "<red>You cannot punish this player!")
-public class CannotPunishPlayerMessage extends ConfigurableMessage {
+public class CannotPunishPlayerMessage implements ConfigurableMessage {
 
     @Override
-    protected String getFormatted() {
+    public String getFormatted() {
         return getUnformatted();
     }
 

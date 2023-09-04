@@ -5,15 +5,7 @@ import me.skinnynoonie.nooniemanagement.config.DefaultMessageConfigValue;
 import me.skinnynoonie.nooniemanagement.util.NameableUser;
 
 @DefaultMessageConfigValue(defaultValue = "<aqua>{target}<gray> has been <white>banned<gray> by <aqua>{issuer}<gray>.")
-public class PublicBanAnnouncement extends ConfigurableMessage {
-
-    private final NameableUser target;
-    private final NameableUser issuer;
-
-    public PublicBanAnnouncement(NameableUser target, NameableUser issuer) {
-        this.target = target;
-        this.issuer = issuer;
-    }
+public record PublicBanAnnouncement(NameableUser target, NameableUser issuer) implements ConfigurableMessage {
 
     @Override
     public String getFormatted() {

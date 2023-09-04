@@ -5,21 +5,21 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import java.util.HashMap;
 
-public abstract class ConfigurableMessage {
+public interface ConfigurableMessage {
 
-    public static final HashMap<Class<? extends ConfigurableMessage>, String> MESSAGE_VALUES = new HashMap<>();
+    HashMap<Class<? extends ConfigurableMessage>, String> MESSAGE_VALUES = new HashMap<>();
 
-    protected abstract String getFormatted();
+    String getFormatted();
 
-    public Component getAsComponent() {
+    default Component getAsComponent() {
         return MiniMessage.miniMessage().deserialize(getFormatted());
     }
 
-    public String getAsString() {
+    default String getAsString() {
         return getFormatted();
     }
 
-    public String getUnformatted() {
+    default String getUnformatted() {
         return MESSAGE_VALUES.get(getClass());
     }
 

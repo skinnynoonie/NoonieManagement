@@ -5,15 +5,7 @@ import me.skinnynoonie.nooniemanagement.config.DefaultMessageConfigValue;
 import me.skinnynoonie.nooniemanagement.util.NameableUser;
 
 @DefaultMessageConfigValue(defaultValue = "<aqua>{target}<gray> has been <white>unmuted<gray> by <aqua>{issuer}<gray>.")
-public class PublicUnmuteAnnouncement extends ConfigurableMessage {
-
-    private final NameableUser target;
-    private final NameableUser issuer;
-
-    public PublicUnmuteAnnouncement(NameableUser target, NameableUser issuer) {
-        this.target = target;
-        this.issuer = issuer;
-    }
+public record PublicUnmuteAnnouncement(NameableUser target, NameableUser issuer) implements ConfigurableMessage {
 
     @Override
     public String getFormatted() {

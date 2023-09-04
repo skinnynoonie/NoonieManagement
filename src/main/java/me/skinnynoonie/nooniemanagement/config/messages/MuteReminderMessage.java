@@ -12,16 +12,10 @@ import me.skinnynoonie.nooniemanagement.util.IndefiniteDuration;
         <white>Reason: <aqua>{reason}
         <white>Duration: <aqua>{duration}
         """)
-public class MuteReminderMessage extends ConfigurableMessage {
-
-    private final Punishment punishment;
-
-    public MuteReminderMessage(Punishment punishment) {
-        this.punishment = punishment;
-    }
+public record MuteReminderMessage(Punishment punishment) implements ConfigurableMessage {
 
     @Override
-    protected String getFormatted() {
+    public String getFormatted() {
         String displayDuration = getDisplayDurationLeft(punishment.getDurationMillis());
         String displayReason = punishment.getReason();
         return getUnformatted()
