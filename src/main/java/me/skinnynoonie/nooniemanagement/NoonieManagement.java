@@ -5,6 +5,7 @@ import me.skinnynoonie.nooniemanagement.command.commands.KickCMD;
 import me.skinnynoonie.nooniemanagement.command.commands.MuteCMD;
 import me.skinnynoonie.nooniemanagement.command.commands.UnbanCMD;
 import me.skinnynoonie.nooniemanagement.command.commands.UnmuteCMD;
+import me.skinnynoonie.nooniemanagement.command.commands.WarnCMD;
 import me.skinnynoonie.nooniemanagement.config.ConfigurableMessage;
 import me.skinnynoonie.nooniemanagement.config.ConfigurableMessageManager;
 import me.skinnynoonie.nooniemanagement.config.organizers.LocalConfigurableMessageOrganizerImpl;
@@ -73,6 +74,7 @@ public final class NoonieManagement extends JavaPlugin {
         new MuteCMD(this, managementDatabase).register();
         new UnmuteCMD(this, managementDatabase).register();
         new KickCMD(this, managementDatabase).register();
+        new WarnCMD(this, managementDatabase).register();
     }
 
     private void runListenerOperations() {
