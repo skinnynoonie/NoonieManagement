@@ -32,7 +32,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -44,6 +44,14 @@
                         </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <relocations>
+                        <relocation>
+                            <pattern>fr.mrmicky.fastinv</pattern>
+                            <shadedPattern>me.skinnynoonie.fastinv</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -77,6 +85,11 @@
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
 
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+
     </repositories>
 
     <dependencies>
@@ -84,6 +97,13 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
+            <version>1.20.1-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
             <version>1.20.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
@@ -112,6 +132,12 @@
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
             <version>0.10.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>fr.mrmicky</groupId>
+            <artifactId>FastInv</artifactId>
+            <version>3.0.4</version>
         </dependency>
 
     </dependencies>

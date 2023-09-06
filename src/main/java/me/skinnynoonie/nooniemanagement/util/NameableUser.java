@@ -89,7 +89,7 @@ public final class NameableUser {
         return username = Bukkit.getOfflinePlayer(uuid).getName();
     }
 
-    public boolean hasUUID() {
+    public boolean hasUUIDCached() {
         return uuid != null;
     }
 

@@ -1,8 +1,8 @@
 package me.skinnynoonie.nooniemanagement.listeners;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
-import me.skinnynoonie.nooniemanagement.config.messages.InternalErrorMessage;
-import me.skinnynoonie.nooniemanagement.config.messages.MuteReminderMessage;
+import me.skinnynoonie.nooniemanagement.config.messages.chat.InternalErrorMessage;
+import me.skinnynoonie.nooniemanagement.config.messages.chat.MuteReminderMessage;
 import me.skinnynoonie.nooniemanagement.database.ManagementDatabase;
 import me.skinnynoonie.nooniemanagement.punishment.Punishment;
 import me.skinnynoonie.nooniemanagement.punishment.PunishmentPortfolio;

@@ -1,7 +1,7 @@
 package me.skinnynoonie.nooniemanagement.listeners;
 
-import me.skinnynoonie.nooniemanagement.config.messages.BanScreenMessage;
-import me.skinnynoonie.nooniemanagement.config.messages.InternalErrorMessage;
+import me.skinnynoonie.nooniemanagement.config.messages.chat.BanScreenMessage;
+import me.skinnynoonie.nooniemanagement.config.messages.chat.InternalErrorMessage;
 import me.skinnynoonie.nooniemanagement.database.ManagementDatabase;
 import me.skinnynoonie.nooniemanagement.punishment.Punishment;
 import me.skinnynoonie.nooniemanagement.punishment.PunishmentPortfolio;

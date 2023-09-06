@@ -9,7 +9,8 @@ public enum CommandPermissions implements EnumPermission {
     MUTE_COMMAND("nooniemanagement.mute"),
     UNMUTE_COMMAND("nooniemanagement.unmute"),
     WARN_COMMAND("nooniemanagement.warn"),
-    KICK_COMMAND("nooniemanagement.kick");
+    KICK_COMMAND("nooniemanagement.kick"),
+    VIEW_PUNISHMENT_LOGS_COMMAND("nooniemanagement.view_logs");
 
     private final String defaultPermission;
     private String permission;

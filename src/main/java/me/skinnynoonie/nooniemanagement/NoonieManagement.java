@@ -1,11 +1,7 @@
 package me.skinnynoonie.nooniemanagement;
 
-import me.skinnynoonie.nooniemanagement.command.commands.BanCMD;
-import me.skinnynoonie.nooniemanagement.command.commands.KickCMD;
-import me.skinnynoonie.nooniemanagement.command.commands.MuteCMD;
-import me.skinnynoonie.nooniemanagement.command.commands.UnbanCMD;
-import me.skinnynoonie.nooniemanagement.command.commands.UnmuteCMD;
-import me.skinnynoonie.nooniemanagement.command.commands.WarnCMD;
+import fr.mrmicky.fastinv.FastInvManager;
+import me.skinnynoonie.nooniemanagement.command.commands.*;
 import me.skinnynoonie.nooniemanagement.config.ConfigurableMessage;
 import me.skinnynoonie.nooniemanagement.config.ConfigurableMessageManager;
 import me.skinnynoonie.nooniemanagement.config.organizers.LocalConfigurableMessageOrganizerImpl;
@@ -24,11 +20,10 @@ import org.reflections.Reflections;
 public final class NoonieManagement extends JavaPlugin {
 
     private ManagementDatabase managementDatabase;
-    private EnumPermissionManager enumPermissionManager;
-    private ConfigurableMessageManager configurableMessageManager;
 
     @Override
     public void onEnable() {
+        FastInvManager.register(this);
         runManagementDatabaseOperations();
         runEnumPermissionManagerOperations();
         runConfigurableMessageOperations();
@@ -54,16 +49,19 @@ public final class NoonieManagement extends JavaPlugin {
     }
 
     private void runEnumPermissionManagerOperations() {
-        enumPermissionManager = new EnumPermissionManager(new LocalPermissionManagerImpl(this));
+        EnumPermissionManager enumPermissionManager = new EnumPermissionManager(new LocalPermissionManagerImpl(this));
         enumPermissionManager.initiate();
         enumPermissionManager.registerEnumPermissions(CommandPermissions.class);
         enumPermissionManager.reloadEnumPermissions(PunishmentPermissions.class);
     }
 
     private void runConfigurableMessageOperations() {
-        configurableMessageManager = new ConfigurableMessageManager(new LocalConfigurableMessageOrganizerImpl(this));
+        ConfigurableMessageManager configurableMessageManager = new ConfigurableMessageManager(new LocalConfigurableMessageOrganizerImpl(this));
         configurableMessageManager.initiate();
-        new Reflections("me.skinnynoonie.nooniemanagement.config.messages")
+        new Reflections("me.skinnynoonie.nooniemanagement.config.messages.chat")
+                .getSubTypesOf(ConfigurableMessage.class)
+                .forEach(configurableMessageManager::register);
+        new Reflections("me.skinnynoonie.nooniemanagement.config.messages.gui")
                 .getSubTypesOf(ConfigurableMessage.class)
                 .forEach(configurableMessageManager::register);
     }
@@ -75,6 +73,7 @@ public final class NoonieManagement extends JavaPlugin {
         new UnmuteCMD(this, managementDatabase).register();
         new KickCMD(this, managementDatabase).register();
         new WarnCMD(this, managementDatabase).register();
+        new ViewPunishmentLogsCMD(this, managementDatabase).register();
     }
 
     private void runListenerOperations() {
