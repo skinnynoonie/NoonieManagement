@@ -1,0 +1,4 @@
+# The server will be shutdown if this configuration is invalid, outdated, etc.
+
+# Do not change this value manually, it is used to give out of date warnings.
+version: 0.0.1

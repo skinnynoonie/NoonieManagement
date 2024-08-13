@@ -1,0 +1,5 @@
+name: NoonieManagement
+version: '${project.version}'
+main: me.skinnynoonie.nooniemanagement.NoonieManagement
+api-version: '1.21'
+load: STARTUP
