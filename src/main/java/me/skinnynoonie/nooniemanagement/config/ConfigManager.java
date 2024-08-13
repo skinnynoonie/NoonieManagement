@@ -31,4 +31,8 @@ public final class ConfigManager {
 
         return true;
     }
+
+    public VersionConfig getVersionConfig() {
+        return this.versionConfig;
+    }
 }
