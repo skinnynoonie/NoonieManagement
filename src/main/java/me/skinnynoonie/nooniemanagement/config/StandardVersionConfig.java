@@ -10,12 +10,12 @@ public final class StandardVersionConfig implements VersionConfig {
     }
 
     @Override
-    public String getVersion() {
-        return this.config.getString("version");
+    public boolean isValid() {
+        return this.getVersion() != null;
     }
 
     @Override
-    public boolean isValid() {
-        return this.getVersion() != null;
+    public String getVersion() {
+        return this.config.getString("version");
     }
 }
