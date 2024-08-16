@@ -6,21 +6,17 @@ import me.skinnynoonie.nooniemanagement.storage.database.DatabaseException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Properties;
 
 public final class PostgreSqlDatabaseSource implements DatabaseSource {
     private final HikariDataSource dataSource;
 
     public PostgreSqlDatabaseSource(DatabaseSourceOptions options) {
-        Properties properties = new Properties();
-        properties.setProperty("dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource");
-        properties.setProperty("dataSource.username", options.getUsername());
-        properties.setProperty("dataSource.password", options.getPassword());
-        properties.setProperty("dataSource.serverName", options.getHost());
-        properties.setProperty("dataSource.portNumber", options.getPort());
-        properties.setProperty("dataSource.databaseName", options.getDatabaseName());
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:postgresql://" + options.getHost() + ":" + options.getPort() + "/" + options.getDatabaseName());
+        config.setUsername(options.getUsername());
+        config.setPassword(options.getPassword());
 
-        this.dataSource = new HikariDataSource(new HikariConfig(properties));
+        this.dataSource = new HikariDataSource(config);
     }
 
     @Override
