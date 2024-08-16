@@ -4,7 +4,6 @@ import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
 import me.skinnynoonie.nooniemanagement.storage.database.DatabaseException;
 import me.skinnynoonie.nooniemanagement.storage.database.punishment.PlayerMutePunishmentRepository;
 import me.skinnynoonie.nooniemanagement.storage.database.punishment.SavedPunishment;
-import me.skinnynoonie.nooniemanagement.storage.database.source.DatabaseSourceOptions;
 import me.skinnynoonie.nooniemanagement.storage.database.source.PostgreSqlDatabaseSource;
 
 import java.sql.Connection;
@@ -19,32 +18,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMutePunishmentRepository {
-    public static void main(String[] args) {
-        final UUID targetId = UUID.fromString("2efec05f-c804-403b-8f38-09a8800859c4");
-
-        PlayerMutePunishment mutePunishment = new PlayerMutePunishment(
-                targetId, UUID.randomUUID(), "test", System.currentTimeMillis(), true, "test2", 1000000000
-        );
-
-        PostgreSqlDatabaseSource databaseSource = new PostgreSqlDatabaseSource(
-                new DatabaseSourceOptions()
-                        .setHost("localhost")
-                        .setPort("5432")
-                        .setDatabaseName("test_noonie_management")
-                        .setUsername("postgres")
-                        .setPassword("test")
-        );
-        PlayerMutePunishmentRepository repository = new PostgreSqlPlayerMutePunishmentRepository(databaseSource);
-        repository.init();
-
-        SavedPunishment<PlayerMutePunishment> savedMutePunishment = repository.save(mutePunishment);
-        System.out.println(savedMutePunishment.getId());
-
-        SavedPunishment<PlayerMutePunishment> recentSavedMutePunishment = repository.findByTarget(targetId).getLast();
-        System.out.println(recentSavedMutePunishment.getId());
-        System.out.println(recentSavedMutePunishment.getPunishment().isActive());
-    }
-
     private final PostgreSqlDatabaseSource databaseSource;
     private final Lock lock;
 
