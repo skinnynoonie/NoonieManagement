@@ -20,16 +20,6 @@ public final class StandardDatabaseConfig implements DatabaseConfig {
     }
 
     @Override
-    public String getUsername() {
-        return this.config.getString("database.username");
-    }
-
-    @Override
-    public String getPassword() {
-        return this.config.getString("database.password");
-    }
-
-    @Override
     public String getHost() {
         return this.config.getString("database.host");
     }
@@ -37,5 +27,20 @@ public final class StandardDatabaseConfig implements DatabaseConfig {
     @Override
     public String getPort() {
         return this.config.getString("database.port");
+    }
+
+    @Override
+    public String getName() {
+        return this.config.getString("database.name");
+    }
+
+    @Override
+    public String getUsername() {
+        return this.config.getString("database.username");
+    }
+
+    @Override
+    public String getPassword() {
+        return this.config.getString("database.password");
     }
 }

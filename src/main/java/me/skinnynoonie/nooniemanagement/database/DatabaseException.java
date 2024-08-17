@@ -1,4 +1,4 @@
-package me.skinnynoonie.nooniemanagement.storage.database;
+package me.skinnynoonie.nooniemanagement.database;
 
 public class DatabaseException extends RuntimeException {
     public DatabaseException() {

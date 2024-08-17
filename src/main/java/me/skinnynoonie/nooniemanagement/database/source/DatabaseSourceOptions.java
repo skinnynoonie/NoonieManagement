@@ -1,6 +1,17 @@
-package me.skinnynoonie.nooniemanagement.storage.database.source;
+package me.skinnynoonie.nooniemanagement.database.source;
+
+import me.skinnynoonie.nooniemanagement.config.DatabaseConfig;
 
 public final class DatabaseSourceOptions {
+    public static DatabaseSourceOptions fromConfig(DatabaseConfig config) {
+        return new DatabaseSourceOptions()
+                .setHost(config.getHost())
+                .setPort(config.getPort())
+                .setDatabaseName(config.getName())
+                .setUsername(config.getUsername())
+                .setPassword(config.getPassword());
+    }
+
     private String username;
     private String password;
     private String host;

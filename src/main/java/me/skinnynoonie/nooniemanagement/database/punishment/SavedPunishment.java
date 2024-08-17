@@ -1,4 +1,4 @@
-package me.skinnynoonie.nooniemanagement.storage.database.punishment;
+package me.skinnynoonie.nooniemanagement.database.punishment;
 
 import me.skinnynoonie.nooniemanagement.punishment.Punishment;
 

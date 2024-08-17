@@ -20,6 +20,15 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
             UUID target,
             UUID issuer,
             String reason,
+            long duration
+    ) {
+        this(target, issuer, reason, System.currentTimeMillis(), false, null, duration);
+    }
+
+    public PlayerMutePunishment(
+            UUID target,
+            UUID issuer,
+            String reason,
             long timeOccurred,
             boolean pardoned,
             String pardonReason,

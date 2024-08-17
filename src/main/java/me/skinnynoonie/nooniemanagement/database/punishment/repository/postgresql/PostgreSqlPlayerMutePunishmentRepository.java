@@ -1,10 +1,10 @@
-package me.skinnynoonie.nooniemanagement.storage.database.punishment.postgre;
+package me.skinnynoonie.nooniemanagement.database.punishment.repository.postgresql;
 
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
-import me.skinnynoonie.nooniemanagement.storage.database.DatabaseException;
-import me.skinnynoonie.nooniemanagement.storage.database.punishment.PlayerMutePunishmentRepository;
-import me.skinnynoonie.nooniemanagement.storage.database.punishment.SavedPunishment;
-import me.skinnynoonie.nooniemanagement.storage.database.source.PostgreSqlDatabaseSource;
+import me.skinnynoonie.nooniemanagement.database.DatabaseException;
+import me.skinnynoonie.nooniemanagement.database.punishment.repository.PlayerMutePunishmentRepository;
+import me.skinnynoonie.nooniemanagement.database.punishment.SavedPunishment;
+import me.skinnynoonie.nooniemanagement.database.source.PostgreSqlDatabaseSource;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

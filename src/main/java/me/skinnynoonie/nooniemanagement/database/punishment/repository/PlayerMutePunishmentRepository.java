@@ -1,7 +1,8 @@
-package me.skinnynoonie.nooniemanagement.storage.database.punishment;
+package me.skinnynoonie.nooniemanagement.database.punishment.repository;
 
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
-import me.skinnynoonie.nooniemanagement.storage.database.DatabaseException;
+import me.skinnynoonie.nooniemanagement.database.DatabaseException;
+import me.skinnynoonie.nooniemanagement.database.punishment.SavedPunishment;
 
 import java.util.List;
 import java.util.UUID;
