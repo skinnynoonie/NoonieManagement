@@ -1,7 +1,9 @@
 package me.skinnynoonie.nooniemanagement.config;
 
+import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.NoonieManagement;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Logger;
 
@@ -10,7 +12,9 @@ public final class ConfigManager {
     private VersionConfig versionConfig;
     private DatabaseConfig databaseConfig;
 
-    public ConfigManager(NoonieManagement noonieManagement) {
+    public ConfigManager(@NotNull NoonieManagement noonieManagement) {
+        Preconditions.checkArgument(noonieManagement != null, "noonieManagement");
+
         this.noonieManagement = noonieManagement;
     }
 

@@ -1,10 +1,12 @@
 package me.skinnynoonie.nooniemanagement.database;
 
+import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.NoonieManagement;
 import me.skinnynoonie.nooniemanagement.config.ConfigManager;
 import me.skinnynoonie.nooniemanagement.database.punishment.service.PunishmentService;
 import me.skinnynoonie.nooniemanagement.database.punishment.service.PunishmentServiceFactory;
 import me.skinnynoonie.nooniemanagement.database.punishment.service.StandardPunishmentServiceFactory;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Logger;
 
@@ -14,7 +16,9 @@ public final class DatabaseManager {
     private PunishmentService punishmentService;
     private boolean initializedProperly;
 
-    public DatabaseManager(NoonieManagement noonieManagement) {
+    public DatabaseManager(@NotNull NoonieManagement noonieManagement) {
+        Preconditions.checkArgument(noonieManagement != null, "noonieManagement");
+
         this.noonieManagement = noonieManagement;
         this.punishmentServiceFactory = new StandardPunishmentServiceFactory();
         this.initializedProperly = false;
@@ -76,7 +80,7 @@ public final class DatabaseManager {
         }
     }
 
-    public PunishmentService getPunishmentService() {
+    public @NotNull PunishmentService getPunishmentService() {
         return this.punishmentService;
     }
 }

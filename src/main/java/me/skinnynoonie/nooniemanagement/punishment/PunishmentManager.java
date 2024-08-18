@@ -1,10 +1,13 @@
 package me.skinnynoonie.nooniemanagement.punishment;
 
+import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.NoonieManagement;
 import me.skinnynoonie.nooniemanagement.database.Saved;
 import me.skinnynoonie.nooniemanagement.database.punishment.service.PunishmentService;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
 import me.skinnynoonie.nooniemanagement.util.Duration;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -16,9 +19,12 @@ public final class PunishmentManager {
         this.noonieManagement = noonieManagement;
     }
 
-    public CompletableFuture<Saved<PlayerMutePunishment>> mutePlayer(
-            UUID target, UUID issuer, String reason, Duration duration
+    public @NotNull CompletableFuture<@NotNull Saved<PlayerMutePunishment>> mutePlayer(
+            @NotNull UUID target, @Nullable UUID issuer, @Nullable String reason, @NotNull Duration duration
     ) {
+        Preconditions.checkArgument(target != null, "target");
+        Preconditions.checkArgument(duration != null, "duration");
+
         PunishmentService punishmentService = this.noonieManagement.getDatabaseManager().getPunishmentService();
         return punishmentService.getPlayerMuteHistory(target)
                 .thenAccept(history -> {
@@ -32,9 +38,11 @@ public final class PunishmentManager {
                 });
     }
 
-    public CompletableFuture<Saved<PlayerMutePunishment>> unMutePlayer(
-            UUID target, UUID pardoner, String reason
+    public @NotNull CompletableFuture<@NotNull Saved<PlayerMutePunishment>> unMutePlayer(
+            @NotNull UUID target, @Nullable UUID pardoner, @Nullable String reason
     ) {
+        Preconditions.checkArgument(target != null, "target");
+
         PunishmentService punishmentService = this.noonieManagement.getDatabaseManager().getPunishmentService();
         return punishmentService.getPlayerMuteHistory(target)
                 .thenApply(history -> {

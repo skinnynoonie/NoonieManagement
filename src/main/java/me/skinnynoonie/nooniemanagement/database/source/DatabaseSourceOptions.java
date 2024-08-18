@@ -1,9 +1,14 @@
 package me.skinnynoonie.nooniemanagement.database.source;
 
+import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.config.DatabaseConfig;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class DatabaseSourceOptions {
-    public static DatabaseSourceOptions fromConfig(DatabaseConfig config) {
+    public static @NotNull DatabaseSourceOptions fromConfig(@NotNull DatabaseConfig config) {
+        Preconditions.checkArgument(config != null, "config");
+
         return new DatabaseSourceOptions()
                 .setHost(config.getHost())
                 .setPort(config.getPort())
@@ -21,47 +26,47 @@ public final class DatabaseSourceOptions {
     public DatabaseSourceOptions() {
     }
 
-    public String getUsername() {
+    public @Nullable String getUsername() {
         return this.username;
     }
 
-    public DatabaseSourceOptions setUsername(String username) {
+    public @NotNull DatabaseSourceOptions setUsername(@Nullable String username) {
         this.username = username;
         return this;
     }
 
-    public String getPassword() {
+    public @Nullable String getPassword() {
         return this.password;
     }
 
-    public DatabaseSourceOptions setPassword(String password) {
+    public @NotNull DatabaseSourceOptions setPassword(@Nullable String password) {
         this.password = password;
         return this;
     }
 
-    public String getHost() {
+    public @Nullable String getHost() {
         return this.host;
     }
 
-    public DatabaseSourceOptions setHost(String host) {
+    public @NotNull DatabaseSourceOptions setHost(@Nullable String host) {
         this.host = host;
         return this;
     }
 
-    public String getPort() {
+    public @Nullable String getPort() {
         return this.port;
     }
 
-    public DatabaseSourceOptions setPort(String port) {
+    public @NotNull DatabaseSourceOptions setPort(@Nullable String port) {
         this.port = port;
         return this;
     }
 
-    public String getDatabaseName() {
+    public @Nullable String getDatabaseName() {
         return this.databaseName;
     }
 
-    public DatabaseSourceOptions setDatabaseName(String databaseName) {
+    public @NotNull DatabaseSourceOptions setDatabaseName(@Nullable String databaseName) {
         this.databaseName = databaseName;
         return this;
     }

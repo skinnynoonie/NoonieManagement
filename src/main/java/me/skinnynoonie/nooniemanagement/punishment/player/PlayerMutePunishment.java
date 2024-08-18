@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.punishment.ActivePunishment;
 import me.skinnynoonie.nooniemanagement.punishment.DurationalPunishment;
 import me.skinnynoonie.nooniemanagement.punishment.PardonablePunishment;
-import me.skinnynoonie.nooniemanagement.punishment.Punishment;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,9 +21,9 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
     private final long duration;
 
     public PlayerMutePunishment(
-            UUID target,
-            UUID issuer,
-            String reason,
+            @NotNull UUID target,
+            @Nullable UUID issuer,
+            @Nullable String reason,
             long duration
     ) {
         this(target, issuer, reason, System.currentTimeMillis(), false, null, null, duration);
@@ -32,12 +31,12 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
 
     public PlayerMutePunishment(
             @NotNull UUID target,
-            UUID issuer,
-            String reason,
+            @Nullable UUID issuer,
+            @Nullable String reason,
             long timeOccurred,
             boolean pardoned,
-            UUID pardoner,
-            String pardonReason,
+            @Nullable UUID pardoner,
+            @Nullable String pardonReason,
             long duration
     ) {
         Preconditions.checkArgument(target != null, "target");

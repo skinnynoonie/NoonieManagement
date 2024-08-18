@@ -1,11 +1,16 @@
 package me.skinnynoonie.nooniemanagement.config;
 
+import com.google.common.base.Preconditions;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class StandardDatabaseConfig implements DatabaseConfig {
     private final ConfigurationSection config;
 
-    public StandardDatabaseConfig(ConfigurationSection config) {
+    public StandardDatabaseConfig(@NotNull ConfigurationSection config) {
+        Preconditions.checkArgument(config != null, "config");
+
         this.config = config;
     }
 
@@ -15,32 +20,32 @@ public final class StandardDatabaseConfig implements DatabaseConfig {
     }
 
     @Override
-    public String getDatabaseType() {
-        return this.config.getString("database.type");
+    public @NotNull String getDatabaseType() {
+        return Preconditions.checkNotNull(this.config.getString("database.type"), "not using config properly, always use isValid() first");
     }
 
     @Override
-    public String getHost() {
+    public @Nullable String getHost() {
         return this.config.getString("database.host");
     }
 
     @Override
-    public String getPort() {
+    public @Nullable String getPort() {
         return this.config.getString("database.port");
     }
 
     @Override
-    public String getName() {
+    public @Nullable String getName() {
         return this.config.getString("database.name");
     }
 
     @Override
-    public String getUsername() {
+    public @Nullable String getUsername() {
         return this.config.getString("database.username");
     }
 
     @Override
-    public String getPassword() {
+    public @Nullable String getPassword() {
         return this.config.getString("database.password");
     }
 }

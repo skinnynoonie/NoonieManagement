@@ -4,6 +4,7 @@ import me.skinnynoonie.nooniemanagement.punishment.history.PlayerMutePunishmentH
 import me.skinnynoonie.nooniemanagement.punishment.history.PlayerPunishmentHistory;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
 import me.skinnynoonie.nooniemanagement.database.Saved;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -13,11 +14,11 @@ public interface PunishmentService {
 
     void shutdown();
 
-    CompletableFuture<PlayerPunishmentHistory> getPlayerHistory(UUID target);
+    @NotNull CompletableFuture<@NotNull PlayerPunishmentHistory> getPlayerHistory(@NotNull UUID target);
 
-    CompletableFuture<PlayerMutePunishmentHistory> getPlayerMuteHistory(UUID target);
+    @NotNull CompletableFuture<@NotNull PlayerMutePunishmentHistory> getPlayerMuteHistory(@NotNull UUID target);
 
-    CompletableFuture<Saved<PlayerMutePunishment>> savePlayerMute(PlayerMutePunishment mute);
+    @NotNull CompletableFuture<@NotNull Saved<PlayerMutePunishment>> savePlayerMute(@NotNull PlayerMutePunishment mute);
 
-    CompletableFuture<Void> savePlayerMute(Saved<PlayerMutePunishment> savedMute);
+    @NotNull CompletableFuture<Void> savePlayerMute(@NotNull Saved<PlayerMutePunishment> savedMute);
 }

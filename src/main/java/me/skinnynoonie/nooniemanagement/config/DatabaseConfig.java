@@ -1,15 +1,18 @@
 package me.skinnynoonie.nooniemanagement.config;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 public interface DatabaseConfig extends Config {
-    String getDatabaseType();
+    @NotNull String getDatabaseType();
 
-    String getHost();
+    @Nullable String getHost();
 
-    String getPort();
+    @Nullable String getPort();
 
-    String getName();
+    @Nullable String getName();
 
-    String getUsername();
+    @Nullable String getUsername();
 
-    String getPassword();
+    @Nullable String getPassword();
 }

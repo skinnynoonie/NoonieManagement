@@ -5,6 +5,7 @@ import me.skinnynoonie.nooniemanagement.database.DatabaseManager;
 import me.skinnynoonie.nooniemanagement.punishment.PunishmentManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 public final class NoonieManagement extends JavaPlugin {
     private ConfigManager configManager;
@@ -44,11 +45,11 @@ public final class NoonieManagement extends JavaPlugin {
         }
     }
 
-    public ConfigManager getConfigManager() {
+    public @NotNull ConfigManager getConfigManager() {
         return this.configManager;
     }
 
-    public DatabaseManager getDatabaseManager() {
+    public @NotNull DatabaseManager getDatabaseManager() {
         return this.databaseManager;
     }
 

@@ -1,5 +1,7 @@
 package me.skinnynoonie.nooniemanagement.util;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -12,7 +14,7 @@ public final class Duration {
         this.time = time;
     }
 
-    public Map<TimeUnit, Long> toTimeUnits() {
+    public @NotNull Map<TimeUnit, Long> toTimeUnits() {
         if (this.isInfinite()) {
             throw new UnsupportedOperationException("can get time units of an infinite time span");
         }

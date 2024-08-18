@@ -1,13 +1,18 @@
 package me.skinnynoonie.nooniemanagement.punishment.history;
 
-public class PlayerPunishmentHistory {
+import com.google.common.base.Preconditions;
+import org.jetbrains.annotations.NotNull;
+
+public final class PlayerPunishmentHistory {
     private final PlayerMutePunishmentHistory muteHistory;
 
-    public PlayerPunishmentHistory(PlayerMutePunishmentHistory muteHistory) {
+    public PlayerPunishmentHistory(@NotNull PlayerMutePunishmentHistory muteHistory) {
+        Preconditions.checkArgument(muteHistory != null, "muteHistory");
+
         this.muteHistory = muteHistory;
     }
 
-    public PlayerMutePunishmentHistory getMuteHistory() {
+    public @NotNull PlayerMutePunishmentHistory getMuteHistory() {
         return this.muteHistory;
     }
 }
