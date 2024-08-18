@@ -1,8 +1,11 @@
 package me.skinnynoonie.nooniemanagement.punishment.player;
 
+import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.punishment.ActivePunishment;
 import me.skinnynoonie.nooniemanagement.punishment.DurationalPunishment;
 import me.skinnynoonie.nooniemanagement.punishment.PardonablePunishment;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -27,7 +30,7 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
     }
 
     public PlayerMutePunishment(
-            UUID target,
+            @NotNull UUID target,
             UUID issuer,
             String reason,
             long timeOccurred,
@@ -36,6 +39,8 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
             String pardonReason,
             long duration
     ) {
+        Preconditions.checkArgument(target != null, "target");
+
         this.target = target;
         this.issuer = issuer;
         this.reason = reason;
@@ -47,22 +52,22 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
     }
 
     @Override
-    public UUID getTarget() {
+    public @NotNull UUID getTarget() {
         return this.target;
     }
 
     @Override
-    public String getType() {
+    public @NotNull String getType() {
         return TYPE;
     }
 
     @Override
-    public UUID getIssuer() {
+    public @Nullable UUID getIssuer() {
         return this.issuer;
     }
 
     @Override
-    public String getReason() {
+    public @Nullable String getReason() {
         return this.reason;
     }
 
@@ -77,7 +82,7 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
     }
 
     @Override
-    public UUID getPardoner() {
+    public @Nullable UUID getPardoner() {
         return this.pardoner;
     }
 
@@ -87,7 +92,7 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
     }
 
     @Override
-    public synchronized void pardon(UUID pardoner, String reason) {
+    public synchronized void pardon(@Nullable UUID pardoner, @Nullable String reason) {
         if (!this.pardoned) {
             this.pardoned = true;
             this.pardoner = pardoner;
@@ -96,7 +101,7 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
     }
 
     @Override
-    public String getPardonReason() {
+    public @Nullable String getPardonReason() {
         return this.pardonReason;
     }
 

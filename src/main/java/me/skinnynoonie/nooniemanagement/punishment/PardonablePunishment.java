@@ -1,13 +1,15 @@
 package me.skinnynoonie.nooniemanagement.punishment;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.UUID;
 
 public interface PardonablePunishment extends Punishment {
-    UUID getPardoner();
+    @Nullable UUID getPardoner();
 
     boolean isPardoned();
 
-    void pardon(UUID pardoner, String reason);
+    void pardon(@Nullable UUID pardoner, @Nullable String reason);
 
-    String getPardonReason();
+    @Nullable String getPardonReason();
 }

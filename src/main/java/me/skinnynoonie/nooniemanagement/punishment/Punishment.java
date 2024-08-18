@@ -1,13 +1,16 @@
 package me.skinnynoonie.nooniemanagement.punishment;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.UUID;
 
 public interface Punishment {
-    String getType();
+    @NotNull String getType();
 
-    UUID getIssuer();
+    @Nullable UUID getIssuer();
 
-    String getReason();
+    @Nullable String getReason();
 
     long getTimeOccurred();
 }
