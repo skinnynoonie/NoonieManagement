@@ -1,5 +1,6 @@
 package me.skinnynoonie.nooniemanagement.database.punishment.service;
 
+import me.skinnynoonie.nooniemanagement.punishment.history.PlayerMutePunishmentHistory;
 import me.skinnynoonie.nooniemanagement.punishment.history.PlayerPunishmentHistory;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
 import me.skinnynoonie.nooniemanagement.database.Saved;
@@ -13,6 +14,8 @@ public interface PunishmentService {
     void shutdown();
 
     CompletableFuture<PlayerPunishmentHistory> getPlayerHistory(UUID target);
+
+    CompletableFuture<PlayerMutePunishmentHistory> getPlayerMuteHistory(UUID target);
 
     CompletableFuture<Saved<PlayerMutePunishment>> savePlayerMute(PlayerMutePunishment mute);
 

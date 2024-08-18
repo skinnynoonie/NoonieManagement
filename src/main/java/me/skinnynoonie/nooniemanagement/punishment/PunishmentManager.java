@@ -20,9 +20,9 @@ public final class PunishmentManager {
             UUID target, UUID issuer, String reason, Duration duration
     ) {
         PunishmentService punishmentService = this.noonieManagement.getDatabaseManager().getPunishmentService();
-        return punishmentService.getPlayerHistory(target)
+        return punishmentService.getPlayerMuteHistory(target)
                 .thenAccept(history -> {
-                    if (history.getMuteHistory().getActiveMute() != null) {
+                    if (history.getActiveMute() != null) {
                         throw new PunishmentException(PunishmentException.Reason.ALREADY_PUNISHED);
                     }
                 })
@@ -36,9 +36,9 @@ public final class PunishmentManager {
             UUID target, UUID pardoner, String reason
     ) {
         PunishmentService punishmentService = this.noonieManagement.getDatabaseManager().getPunishmentService();
-        return punishmentService.getPlayerHistory(target)
+        return punishmentService.getPlayerMuteHistory(target)
                 .thenApply(history -> {
-                    Saved<PlayerMutePunishment> activeSavedMute = history.getMuteHistory().getActiveMute();
+                    Saved<PlayerMutePunishment> activeSavedMute = history.getActiveMute();
                     if (activeSavedMute == null) {
                         throw new PunishmentException(PunishmentException.Reason.NOT_PUNISHED);
                     } else {
