@@ -1,13 +1,13 @@
 package me.skinnynoonie.nooniemanagement.punishment;
 
+import java.util.UUID;
+
 public interface PardonablePunishment extends Punishment {
+    UUID getPardoner();
+
     boolean isPardoned();
 
-    default void pardon() {
-        this.pardon(null);
-    }
-
-    void pardon(String reason);
+    void pardon(UUID pardoner, String reason);
 
     String getPardonReason();
 }

@@ -42,6 +42,7 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
                         reason        TEXT,
                         time_occurred BIGINT  NOT NULL,
                         pardoned      BOOLEAN NOT NULL,
+                        pardoner      TEXT,
                         pardon_reason TEXT,
                         duration      BIGINT  NOT NULL
                     );
@@ -88,10 +89,11 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
                         reason,
                         time_occurred,
                         pardoned,
+                        pardoner,
                         pardon_reason,
                         duration
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ON CONFLICT (id) DO UPDATE
                     SET
                         target        = EXCLUDED.target,
@@ -99,6 +101,7 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
                         reason        = EXCLUDED.reason,
                         time_occurred = EXCLUDED.time_occurred,
                         pardoned      = EXCLUDED.pardoned,
+                        pardoner      = EXCLUDED.pardoner,
                         pardon_reason = EXCLUDED.pardon_reason,
                         duration      = EXCLUDED.duration;
                     """
@@ -107,12 +110,13 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
             PlayerMutePunishment punishment = savedPunishment.getPunishment();
             updateByIdStatement.setInt(1, savedPunishment.getId());
             updateByIdStatement.setString(2, punishment.getTarget().toString());
-            updateByIdStatement.setString(3, punishment.getIssuer().toString());
+            updateByIdStatement.setString(3, punishment.getIssuer() == null ? null : punishment.getIssuer().toString());
             updateByIdStatement.setString(4, punishment.getReason());
             updateByIdStatement.setLong(5, punishment.getTimeOccurred());
             updateByIdStatement.setBoolean(6, punishment.isPardoned());
-            updateByIdStatement.setString(7, punishment.getPardonReason());
-            updateByIdStatement.setLong(8, punishment.getDuration());
+            updateByIdStatement.setString(7, punishment.getPardoner() == null ? null : punishment.getPardoner().toString());
+            updateByIdStatement.setString(8, punishment.getPardonReason());
+            updateByIdStatement.setLong(9, punishment.getDuration());
             updateByIdStatement.executeUpdate();
         } catch (SQLException e) {
             throw new DatabaseException(e);
@@ -146,17 +150,22 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
     private SavedPunishment<PlayerMutePunishment> mapResultSetToSavedPunishment(ResultSet resultSet) throws SQLException {
         try {
             PlayerMutePunishment mutePunishment = new PlayerMutePunishment(
-                    UUID.fromString(resultSet.getString(2)),
-                    UUID.fromString(resultSet.getString(3)),
+                    this.parseUuidSupportingNull(resultSet.getString(2)),
+                    this.parseUuidSupportingNull(resultSet.getString(3)),
                     resultSet.getString(4),
                     resultSet.getLong(5),
                     resultSet.getBoolean(6),
-                    resultSet.getString(7),
-                    resultSet.getLong(8)
+                    this.parseUuidSupportingNull(resultSet.getString(7)),
+                    resultSet.getString(8),
+                    resultSet.getLong(9)
             );
             return new SavedPunishment<>(resultSet.getInt(1), mutePunishment);
         } catch (IllegalArgumentException e) {
             throw new SQLException(e);
         }
+    }
+
+    private UUID parseUuidSupportingNull(String string) {
+        return string == null ? null : UUID.fromString(string);
     }
 }

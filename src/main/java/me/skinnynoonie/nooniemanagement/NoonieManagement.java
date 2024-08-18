@@ -2,12 +2,14 @@ package me.skinnynoonie.nooniemanagement;
 
 import me.skinnynoonie.nooniemanagement.config.ConfigManager;
 import me.skinnynoonie.nooniemanagement.database.DatabaseManager;
+import me.skinnynoonie.nooniemanagement.punishment.PunishmentManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class NoonieManagement extends JavaPlugin {
     private ConfigManager configManager;
     private DatabaseManager databaseManager;
+    private PunishmentManager punishmentManager;
 
     @Override
     public void onEnable() {
@@ -23,6 +25,8 @@ public final class NoonieManagement extends JavaPlugin {
                 this.shutdownWithReason("Shutting down due to an invalid database.");
                 return;
             }
+
+            this.punishmentManager = new PunishmentManager(this);
         } catch (Throwable e) {
             this.shutdownWithReason("Shutting down due to an exception occurring.");
             e.printStackTrace();

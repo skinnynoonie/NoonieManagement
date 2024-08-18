@@ -13,6 +13,7 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
     private final String reason;
     private final long timeOccurred;
     private boolean pardoned;
+    private UUID pardoner;
     private String pardonReason;
     private final long duration;
 
@@ -22,7 +23,7 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
             String reason,
             long duration
     ) {
-        this(target, issuer, reason, System.currentTimeMillis(), false, null, duration);
+        this(target, issuer, reason, System.currentTimeMillis(), false, null, null, duration);
     }
 
     public PlayerMutePunishment(
@@ -31,6 +32,7 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
             String reason,
             long timeOccurred,
             boolean pardoned,
+            UUID pardoner,
             String pardonReason,
             long duration
     ) {
@@ -39,6 +41,7 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
         this.reason = reason;
         this.timeOccurred = timeOccurred;
         this.pardoned = pardoned;
+        this.pardoner = pardoner;
         this.pardonReason = pardonReason;
         this.duration = duration;
     }
@@ -74,14 +77,20 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
     }
 
     @Override
-    public synchronized boolean isPardoned() {
+    public UUID getPardoner() {
+        return this.pardoner;
+    }
+
+    @Override
+    public boolean isPardoned() {
         return this.pardoned;
     }
 
     @Override
-    public synchronized void pardon(String reason) {
+    public synchronized void pardon(UUID pardoner, String reason) {
         if (!this.pardoned) {
             this.pardoned = true;
+            this.pardoner = pardoner;
             this.pardonReason = reason;
         }
     }
