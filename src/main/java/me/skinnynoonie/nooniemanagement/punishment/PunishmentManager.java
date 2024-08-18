@@ -1,7 +1,7 @@
 package me.skinnynoonie.nooniemanagement.punishment;
 
 import me.skinnynoonie.nooniemanagement.NoonieManagement;
-import me.skinnynoonie.nooniemanagement.database.punishment.SavedPunishment;
+import me.skinnynoonie.nooniemanagement.database.Saved;
 import me.skinnynoonie.nooniemanagement.database.punishment.service.PunishmentService;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
 import me.skinnynoonie.nooniemanagement.util.Duration;
@@ -16,7 +16,7 @@ public final class PunishmentManager {
         this.noonieManagement = noonieManagement;
     }
 
-    public CompletableFuture<SavedPunishment<PlayerMutePunishment>> mutePlayer(
+    public CompletableFuture<Saved<PlayerMutePunishment>> mutePlayer(
             UUID target, UUID issuer, String reason, Duration duration
     ) {
         PunishmentService punishmentService = this.noonieManagement.getDatabaseManager().getPunishmentService();
@@ -32,13 +32,13 @@ public final class PunishmentManager {
                 });
     }
 
-    public CompletableFuture<SavedPunishment<PlayerMutePunishment>> unMutePlayer(
+    public CompletableFuture<Saved<PlayerMutePunishment>> unMutePlayer(
             UUID target, UUID pardoner, String reason
     ) {
         PunishmentService punishmentService = this.noonieManagement.getDatabaseManager().getPunishmentService();
         return punishmentService.getPlayerHistory(target)
                 .thenApply(history -> {
-                    SavedPunishment<PlayerMutePunishment> activeSavedMute = history.getMuteHistory().getActiveMute();
+                    Saved<PlayerMutePunishment> activeSavedMute = history.getMuteHistory().getActiveMute();
                     if (activeSavedMute == null) {
                         throw new PunishmentException(PunishmentException.Reason.NOT_PUNISHED);
                     } else {
@@ -46,8 +46,8 @@ public final class PunishmentManager {
                     }
                 })
                 .thenApply(activeSavedMute -> {
-                    activeSavedMute.getPunishment().pardon(pardoner, reason);
-                    punishmentService.updatePlayerMute(activeSavedMute);
+                    activeSavedMute.get().pardon(pardoner, reason);
+                    punishmentService.savePlayerMute(activeSavedMute);
                     return activeSavedMute;
                 });
     }

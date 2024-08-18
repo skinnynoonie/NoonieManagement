@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.punishment.ActivePunishment;
 import me.skinnynoonie.nooniemanagement.punishment.DurationalPunishment;
 import me.skinnynoonie.nooniemanagement.punishment.PardonablePunishment;
+import me.skinnynoonie.nooniemanagement.punishment.Punishment;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -109,5 +110,14 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
     public boolean isActive() {
         boolean timeActive = this.isPermanent() || this.timeOccurred + this.duration > System.currentTimeMillis();
         return !this.isPardoned() && timeActive;
+    }
+
+    @Override
+    public PlayerMutePunishment clone() {
+        try {
+            return (PlayerMutePunishment) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -4,7 +4,7 @@ import me.skinnynoonie.nooniemanagement.punishment.history.PlayerMutePunishmentH
 import me.skinnynoonie.nooniemanagement.punishment.history.PlayerPunishmentHistory;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
 import me.skinnynoonie.nooniemanagement.database.punishment.repository.PlayerMutePunishmentRepository;
-import me.skinnynoonie.nooniemanagement.database.punishment.SavedPunishment;
+import me.skinnynoonie.nooniemanagement.database.Saved;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -42,13 +42,13 @@ public final class CombinedPunishmentService implements PunishmentService {
     }
 
     @Override
-    public CompletableFuture<SavedPunishment<PlayerMutePunishment>> savePlayerMute(PlayerMutePunishment mute) {
+    public CompletableFuture<Saved<PlayerMutePunishment>> savePlayerMute(PlayerMutePunishment mute) {
         return this.supply(() -> this.playerMuteRepository.save(mute));
     }
 
     @Override
-    public CompletableFuture<Void> updatePlayerMute(SavedPunishment<PlayerMutePunishment> savedMute) {
-        return this.run(() -> this.playerMuteRepository.update(savedMute));
+    public CompletableFuture<Void> savePlayerMute(Saved<PlayerMutePunishment> savedMute) {
+        return this.run(() -> this.playerMuteRepository.save(savedMute));
     }
 
     private <T> CompletableFuture<T> supply(Supplier<T> supplier) {

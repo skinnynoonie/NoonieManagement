@@ -1,8 +1,10 @@
 package me.skinnynoonie.nooniemanagement.database.punishment.repository;
 
 import me.skinnynoonie.nooniemanagement.database.DatabaseException;
-import me.skinnynoonie.nooniemanagement.database.punishment.SavedPunishment;
+import me.skinnynoonie.nooniemanagement.database.Saved;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.UUID;
@@ -10,9 +12,11 @@ import java.util.UUID;
 public interface PlayerMutePunishmentRepository {
     void init() throws DatabaseException;
 
-    SavedPunishment<PlayerMutePunishment> save(PlayerMutePunishment punishment) throws DatabaseException;
+    @NotNull Saved<PlayerMutePunishment> save(@NotNull PlayerMutePunishment mute) throws DatabaseException;
 
-    void update(SavedPunishment<PlayerMutePunishment> punishment) throws DatabaseException;
+    void save(@NotNull Saved<PlayerMutePunishment> savedMute) throws DatabaseException;
 
-    List<SavedPunishment<PlayerMutePunishment>> findByTarget(UUID target) throws DatabaseException;
+    @Nullable Saved<PlayerMutePunishment> findById(int id) throws DatabaseException;
+
+    @NotNull List<@NotNull Saved<PlayerMutePunishment>> findByTarget(@NotNull UUID target) throws DatabaseException;
 }

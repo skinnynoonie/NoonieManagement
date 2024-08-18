@@ -1,10 +1,13 @@
 package me.skinnynoonie.nooniemanagement.database.punishment.repository.postgresql;
 
+import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.database.DatabaseException;
-import me.skinnynoonie.nooniemanagement.database.punishment.SavedPunishment;
+import me.skinnynoonie.nooniemanagement.database.Saved;
 import me.skinnynoonie.nooniemanagement.database.punishment.repository.PlayerMutePunishmentRepository;
 import me.skinnynoonie.nooniemanagement.database.source.PostgreSqlDatabaseSource;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,7 +24,9 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
     private final PostgreSqlDatabaseSource databaseSource;
     private final Lock lock;
 
-    public PostgreSqlPlayerMutePunishmentRepository(PostgreSqlDatabaseSource databaseSource) {
+    public PostgreSqlPlayerMutePunishmentRepository(@NotNull PostgreSqlDatabaseSource databaseSource) {
+        Preconditions.checkArgument(databaseSource != null, "databaseSource");
+
         this.databaseSource = databaseSource;
         this.lock = new ReentrantLock();
     }
@@ -37,12 +42,12 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
                     """
                     CREATE TABLE IF NOT EXISTS player_mute_punishment (
                         id            INT     NOT NULL PRIMARY KEY,
-                        target        TEXT    NOT NULL,
-                        issuer        TEXT,
+                        target        UUID    NOT NULL,
+                        issuer        UUID,
                         reason        TEXT,
                         time_occurred BIGINT  NOT NULL,
                         pardoned      BOOLEAN NOT NULL,
-                        pardoner      TEXT,
+                        pardoner      UUID,
                         pardon_reason TEXT,
                         duration      BIGINT  NOT NULL
                     );
@@ -56,7 +61,9 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
     }
 
     @Override
-    public SavedPunishment<PlayerMutePunishment> save(PlayerMutePunishment punishment) {
+    public @NotNull Saved<PlayerMutePunishment> save(@NotNull PlayerMutePunishment mute) {
+        Preconditions.checkArgument(mute != null, "mute");
+
         this.lock.lock();
         try (
             Connection connection = this.databaseSource.getConnection();
@@ -65,8 +72,8 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
         ) {
             nextIdResult.next();
             int nextId = nextIdResult.getInt(1) + 1;
-            SavedPunishment<PlayerMutePunishment> savedPunishment = new SavedPunishment<>(nextId, punishment);
-            this.update(savedPunishment);
+            Saved<PlayerMutePunishment> savedPunishment = new Saved<>(nextId, mute.clone());
+            this.save(savedPunishment);
             return savedPunishment;
         } catch (SQLException e) {
             throw new DatabaseException(e);
@@ -76,7 +83,9 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
     }
 
     @Override
-    public void update(SavedPunishment<PlayerMutePunishment> savedPunishment) {
+    public void save(@NotNull Saved<PlayerMutePunishment> savedMute) {
+        Preconditions.checkArgument(savedMute != null, "savedMute");
+
         this.lock.lock();
         try (
             Connection connection = this.databaseSource.getConnection();
@@ -107,14 +116,14 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
                     """
             )
         ) {
-            PlayerMutePunishment punishment = savedPunishment.getPunishment();
-            updateByIdStatement.setInt(1, savedPunishment.getId());
-            updateByIdStatement.setString(2, punishment.getTarget().toString());
-            updateByIdStatement.setString(3, punishment.getIssuer() == null ? null : punishment.getIssuer().toString());
+            PlayerMutePunishment punishment = savedMute.get();
+            updateByIdStatement.setInt(1, savedMute.getId());
+            updateByIdStatement.setObject(2, punishment.getTarget());
+            updateByIdStatement.setObject(3, punishment.getIssuer());
             updateByIdStatement.setString(4, punishment.getReason());
             updateByIdStatement.setLong(5, punishment.getTimeOccurred());
             updateByIdStatement.setBoolean(6, punishment.isPardoned());
-            updateByIdStatement.setString(7, punishment.getPardoner() == null ? null : punishment.getPardoner().toString());
+            updateByIdStatement.setObject(7, punishment.getPardoner());
             updateByIdStatement.setString(8, punishment.getPardonReason());
             updateByIdStatement.setLong(9, punishment.getDuration());
             updateByIdStatement.executeUpdate();
@@ -126,17 +135,41 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
     }
 
     @Override
-    public List<SavedPunishment<PlayerMutePunishment>> findByTarget(UUID target) throws DatabaseException {
+    public @Nullable Saved<PlayerMutePunishment> findById(int id) throws DatabaseException {
+        this.lock.lock();
+        try (
+            Connection connection = this.databaseSource.getConnection();
+            PreparedStatement findByIdStatement = connection.prepareStatement("SELECT * FROM player_mute_punishment WHERE id = ?;")
+        ) {
+            findByIdStatement.setInt(1, id);
+            try (ResultSet findByIdResult = findByIdStatement.executeQuery()) {
+                if (findByIdResult.next()) {
+                    return this.resultSetToSavedPlayerMute(findByIdResult);
+                } else {
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
+        } finally {
+            this.lock.unlock();
+        }
+    }
+
+    @Override
+    public @NotNull List<@NotNull Saved<PlayerMutePunishment>> findByTarget(@NotNull UUID target) throws DatabaseException {
+        Preconditions.checkArgument(target != null, "target");
+
         this.lock.lock();
         try (
             Connection connection = this.databaseSource.getConnection();
             PreparedStatement findByTargetStatement = connection.prepareStatement("SELECT * FROM player_mute_punishment WHERE target = ?;")
         ) {
-            findByTargetStatement.setString(1, target.toString());
+            findByTargetStatement.setObject(1, target);
             try (ResultSet findByTargetResult = findByTargetStatement.executeQuery()) {
-                List<SavedPunishment<PlayerMutePunishment>> mutePunishments = new ArrayList<>();
+                List<Saved<PlayerMutePunishment>> mutePunishments = new ArrayList<>();
                 while (findByTargetResult.next()) {
-                    mutePunishments.add(this.mapResultSetToSavedPunishment(findByTargetResult));
+                    mutePunishments.add(this.resultSetToSavedPlayerMute(findByTargetResult));
                 }
                 return mutePunishments;
             }
@@ -147,25 +180,17 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
         }
     }
 
-    private SavedPunishment<PlayerMutePunishment> mapResultSetToSavedPunishment(ResultSet resultSet) throws SQLException {
-        try {
-            PlayerMutePunishment mutePunishment = new PlayerMutePunishment(
-                    this.parseUuidSupportingNull(resultSet.getString(2)),
-                    this.parseUuidSupportingNull(resultSet.getString(3)),
-                    resultSet.getString(4),
-                    resultSet.getLong(5),
-                    resultSet.getBoolean(6),
-                    this.parseUuidSupportingNull(resultSet.getString(7)),
-                    resultSet.getString(8),
-                    resultSet.getLong(9)
-            );
-            return new SavedPunishment<>(resultSet.getInt(1), mutePunishment);
-        } catch (IllegalArgumentException e) {
-            throw new SQLException(e);
-        }
-    }
-
-    private UUID parseUuidSupportingNull(String string) {
-        return string == null ? null : UUID.fromString(string);
+    private Saved<PlayerMutePunishment> resultSetToSavedPlayerMute(ResultSet resultSet) throws SQLException {
+        PlayerMutePunishment mutePunishment = new PlayerMutePunishment(
+                (UUID) resultSet.getObject(2),
+                (UUID) resultSet.getObject(3),
+                resultSet.getString(4),
+                resultSet.getLong(5),
+                resultSet.getBoolean(6),
+                (UUID) resultSet.getObject(7),
+                resultSet.getString(8),
+                resultSet.getLong(9)
+        );
+        return new Saved<>(resultSet.getInt(1), mutePunishment);
     }
 }

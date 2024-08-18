@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public interface Punishment {
+public interface Punishment extends Cloneable {
     @NotNull String getType();
 
     @Nullable UUID getIssuer();
@@ -13,4 +13,6 @@ public interface Punishment {
     @Nullable String getReason();
 
     long getTimeOccurred();
+
+    Punishment clone();
 }
