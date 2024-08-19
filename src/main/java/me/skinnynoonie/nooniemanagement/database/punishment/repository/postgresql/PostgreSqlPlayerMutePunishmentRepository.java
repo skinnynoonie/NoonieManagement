@@ -67,7 +67,7 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
         this.lock.lock();
         try (
             Connection connection = this.databaseSource.getConnection();
-            PreparedStatement findNextIdStatement = connection.prepareStatement("SELECT COUNT(*) FROM player_mute_punishment;");
+            PreparedStatement findNextIdStatement = connection.prepareStatement("SELECT MAX(id) FROM player_mute_punishment;");
             ResultSet nextIdResult = findNextIdStatement.executeQuery()
         ) {
             nextIdResult.next();
