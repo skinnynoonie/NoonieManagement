@@ -42,4 +42,8 @@ public final class PostgreSqlDatabaseSource implements DatabaseSource {
             throw new DatabaseException(e);
         }
     }
+
+    public @NotNull HikariDataSource getDataSource() {
+        return this.dataSource;
+    }
 }
