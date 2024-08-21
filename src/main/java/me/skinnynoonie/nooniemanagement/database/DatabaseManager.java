@@ -2,7 +2,10 @@ package me.skinnynoonie.nooniemanagement.database;
 
 import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.NoonieManagement;
-import me.skinnynoonie.nooniemanagement.config.ConfigManager;
+import me.skinnynoonie.nooniemanagement.config.DatabaseConfig;
+import me.skinnynoonie.nooniemanagement.database.connection.ConnectionException;
+import me.skinnynoonie.nooniemanagement.database.connection.ConnectionProvider;
+import me.skinnynoonie.nooniemanagement.database.connection.StandardConnectionProviderFactory;
 import me.skinnynoonie.nooniemanagement.database.punishment.service.PunishmentService;
 import me.skinnynoonie.nooniemanagement.database.punishment.service.PunishmentServiceFactory;
 import me.skinnynoonie.nooniemanagement.database.punishment.service.StandardPunishmentServiceFactory;
@@ -26,44 +29,43 @@ public final class DatabaseManager {
 
     public boolean init() {
         Logger logger = this.noonieManagement.getLogger();
-
-        if (!this.createPunishmentService(logger)) {
-            return false;
-        }
-
         try {
-            this.punishmentService.init();
+            DatabaseConfig databaseConfig = this.noonieManagement.getConfigManager().getDatabaseConfig();
+
+            ConnectionProvider connectionProvider;
+            try {
+                connectionProvider = new StandardConnectionProviderFactory().from(databaseConfig);
+                if (connectionProvider == null) {
+                    logger.severe("Unsupported database type provided.");
+                    return false;
+                }
+            } catch (ConnectionException e) {
+                logger.severe("Something went wrong while connecting to the database.");
+                logger.severe("Assure that the authentication is correct.");
+                return false;
+            }
+
+            this.punishmentService = new StandardPunishmentServiceFactory().from(connectionProvider);
+            if (this.punishmentService == null) {
+                logger.severe("Unsupported database type provided.");
+                return false;
+            }
+
+            try {
+                this.punishmentService.init();
+            } catch (DatabaseException e) {
+                logger.severe("Something went wrong while initializing the database service.");
+                e.printStackTrace();
+                return false;
+            }
+
+            this.initializedProperly = true;
+            return true;
         } catch (Exception e) {
-            logger.severe("Failed database initialization.");
+            logger.severe("Failed to initialize the database.");
             e.printStackTrace();
             return false;
         }
-
-        this.initializedProperly = true;
-        return true;
-    }
-
-    private boolean createPunishmentService(Logger logger) {
-        ConfigManager configManager = this.noonieManagement.getConfigManager();
-        try {
-            this.punishmentService = this.punishmentServiceFactory.from(configManager.getDatabaseConfig());
-        } catch (Exception e) {
-            logger.severe(
-                    """
-                    Failed database connection.
-                    Please assure the host, port, username, password, etc. are all correct.
-                    """
-            );
-            e.printStackTrace();
-            return false;
-        }
-
-        if (this.punishmentService == null) {
-            logger.severe("Unsupported database type provided.");
-            return false;
-        }
-
-        return true;
     }
 
     public void shutdown() {

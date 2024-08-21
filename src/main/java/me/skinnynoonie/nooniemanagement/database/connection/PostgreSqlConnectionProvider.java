@@ -1,18 +1,17 @@
-package me.skinnynoonie.nooniemanagement.database.source;
+package me.skinnynoonie.nooniemanagement.database.connection;
 
 import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import me.skinnynoonie.nooniemanagement.database.DatabaseException;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public final class PostgreSqlDatabaseSource implements DatabaseSource {
+public final class PostgreSqlConnectionProvider implements ConnectionProvider {
     private final HikariDataSource dataSource;
 
-    public PostgreSqlDatabaseSource(@NotNull DatabaseSourceOptions options) {
+    public PostgreSqlConnectionProvider(@NotNull ConnectionProviderOptions options) throws ConnectionException {
         Preconditions.checkArgument(options != null, "options");
         Preconditions.checkArgument(options.getHost() != null, "options.getHost()");
         Preconditions.checkArgument(options.getPort() != null, "options.getPort()");
@@ -31,19 +30,23 @@ public final class PostgreSqlDatabaseSource implements DatabaseSource {
         config.setUsername(options.getUsername());
         config.setPassword(options.getPassword());
 
-        this.dataSource = new HikariDataSource(config);
-    }
-
-    @Override
-    public @NotNull Connection getConnection() throws DatabaseException {
         try {
-            return this.dataSource.getConnection();
-        } catch (SQLException e) {
-            throw new DatabaseException(e);
+            this.dataSource = new HikariDataSource(config);
+        } catch (Exception e) {
+            throw new ConnectionException(e);
         }
     }
 
-    public @NotNull HikariDataSource getDataSource() {
+    @Override
+    public @NotNull Connection getConnection() throws ConnectionException {
+        try {
+            return this.dataSource.getConnection();
+        } catch (SQLException e) {
+            throw new ConnectionException(e);
+        }
+    }
+
+    public @NotNull HikariDataSource getSource() {
         return this.dataSource;
     }
 }

@@ -7,7 +7,6 @@ import me.skinnynoonie.nooniemanagement.punishment.history.PlayerMutePunishmentH
 import me.skinnynoonie.nooniemanagement.punishment.history.PlayerPunishmentHistory;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;

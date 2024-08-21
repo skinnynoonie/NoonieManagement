@@ -19,19 +19,25 @@ public final class ConfigManager {
     }
 
     public boolean init() {
-        this.noonieManagement.saveDefaultConfig();
-        ConfigurationSection config = this.noonieManagement.getConfig();
         Logger logger = this.noonieManagement.getLogger();
+        try {
+            this.noonieManagement.saveDefaultConfig();
+            ConfigurationSection config = this.noonieManagement.getConfig();
 
-        if (!this.initVersionConfig(config, logger)) {
+            if (!this.initVersionConfig(config, logger)) {
+                return false;
+            }
+
+            if (!this.initDatabaseConfig(config, logger)) {
+                return false;
+            }
+
+            return true;
+        } catch (Exception e) {
+            logger.severe("Failed to initialize configuration.");
+            e.printStackTrace();
             return false;
         }
-
-        if (!this.initDatabaseConfig(config, logger)) {
-            return false;
-        }
-
-        return true;
     }
 
     private boolean initVersionConfig(ConfigurationSection config, Logger logger) {
@@ -62,11 +68,11 @@ public final class ConfigManager {
         }
     }
 
-    public VersionConfig getVersionConfig() {
+    public @NotNull VersionConfig getVersionConfig() {
         return this.versionConfig;
     }
 
-    public DatabaseConfig getDatabaseConfig() {
+    public @NotNull DatabaseConfig getDatabaseConfig() {
         return this.databaseConfig;
     }
 }

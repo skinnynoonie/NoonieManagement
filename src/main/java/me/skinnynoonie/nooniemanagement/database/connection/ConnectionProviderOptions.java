@@ -1,15 +1,15 @@
-package me.skinnynoonie.nooniemanagement.database.source;
+package me.skinnynoonie.nooniemanagement.database.connection;
 
 import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.config.DatabaseConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class DatabaseSourceOptions {
-    public static @NotNull DatabaseSourceOptions fromConfig(@NotNull DatabaseConfig config) {
+public final class ConnectionProviderOptions {
+    public static @NotNull ConnectionProviderOptions fromConfig(@NotNull DatabaseConfig config) {
         Preconditions.checkArgument(config != null, "config");
 
-        return new DatabaseSourceOptions()
+        return new ConnectionProviderOptions()
                 .setHost(config.getHost())
                 .setPort(config.getPort())
                 .setDatabaseName(config.getName())
@@ -23,14 +23,14 @@ public final class DatabaseSourceOptions {
     private String port;
     private String databaseName;
 
-    public DatabaseSourceOptions() {
+    public ConnectionProviderOptions() {
     }
 
     public @Nullable String getUsername() {
         return this.username;
     }
 
-    public @NotNull DatabaseSourceOptions setUsername(@Nullable String username) {
+    public @NotNull ConnectionProviderOptions setUsername(@Nullable String username) {
         this.username = username;
         return this;
     }
@@ -39,7 +39,7 @@ public final class DatabaseSourceOptions {
         return this.password;
     }
 
-    public @NotNull DatabaseSourceOptions setPassword(@Nullable String password) {
+    public @NotNull ConnectionProviderOptions setPassword(@Nullable String password) {
         this.password = password;
         return this;
     }
@@ -48,7 +48,7 @@ public final class DatabaseSourceOptions {
         return this.host;
     }
 
-    public @NotNull DatabaseSourceOptions setHost(@Nullable String host) {
+    public @NotNull ConnectionProviderOptions setHost(@Nullable String host) {
         this.host = host;
         return this;
     }
@@ -57,7 +57,7 @@ public final class DatabaseSourceOptions {
         return this.port;
     }
 
-    public @NotNull DatabaseSourceOptions setPort(@Nullable String port) {
+    public @NotNull ConnectionProviderOptions setPort(@Nullable String port) {
         this.port = port;
         return this;
     }
@@ -66,7 +66,7 @@ public final class DatabaseSourceOptions {
         return this.databaseName;
     }
 
-    public @NotNull DatabaseSourceOptions setDatabaseName(@Nullable String databaseName) {
+    public @NotNull ConnectionProviderOptions setDatabaseName(@Nullable String databaseName) {
         this.databaseName = databaseName;
         return this;
     }

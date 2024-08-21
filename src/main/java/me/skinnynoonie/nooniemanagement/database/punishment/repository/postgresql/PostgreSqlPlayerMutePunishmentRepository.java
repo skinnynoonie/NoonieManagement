@@ -1,11 +1,14 @@
 package me.skinnynoonie.nooniemanagement.database.punishment.repository.postgresql;
 
 import com.google.common.base.Preconditions;
+import me.skinnynoonie.nooniemanagement.NoonieManagement;
 import me.skinnynoonie.nooniemanagement.database.DatabaseException;
 import me.skinnynoonie.nooniemanagement.database.Saved;
 import me.skinnynoonie.nooniemanagement.database.punishment.repository.PlayerMutePunishmentRepository;
-import me.skinnynoonie.nooniemanagement.database.source.PostgreSqlDatabaseSource;
+import me.skinnynoonie.nooniemanagement.database.connection.PostgreSqlConnectionProvider;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
+import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.FlywayException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,7 +16,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -21,39 +23,28 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMutePunishmentRepository {
-    private final PostgreSqlDatabaseSource databaseSource;
+    private final PostgreSqlConnectionProvider connectionProvider;
     private final Lock lock;
 
-    public PostgreSqlPlayerMutePunishmentRepository(@NotNull PostgreSqlDatabaseSource databaseSource) {
-        Preconditions.checkArgument(databaseSource != null, "databaseSource");
+    public PostgreSqlPlayerMutePunishmentRepository(@NotNull PostgreSqlConnectionProvider connectionProvider) {
+        Preconditions.checkArgument(connectionProvider != null, "databaseSource");
 
-        this.databaseSource = databaseSource;
+        this.connectionProvider = connectionProvider;
         this.lock = new ReentrantLock();
     }
 
     @Override
     public void init() throws DatabaseException {
         this.lock.lock();
-        try (
-            Connection connection = this.databaseSource.getConnection();
-            Statement initStatement = connection.createStatement()
-        ) {
-            initStatement.execute(
-                    """
-                    CREATE TABLE IF NOT EXISTS player_mute_punishment (
-                        id            INT     NOT NULL PRIMARY KEY,
-                        target        UUID    NOT NULL,
-                        issuer        UUID,
-                        reason        TEXT,
-                        time_occurred BIGINT  NOT NULL,
-                        pardoned      BOOLEAN NOT NULL,
-                        pardoner      UUID,
-                        pardon_reason TEXT,
-                        duration      BIGINT  NOT NULL
-                    );
-                    """
-            );
-        } catch (SQLException e) {
+        try {
+            Flyway.configure(NoonieManagement.class.getClassLoader())
+                    .locations("/db/migration/postgresql/player_mute_punishment/")
+                    .dataSource(this.connectionProvider.getSource())
+                    .baselineVersion("0")
+                    .baselineOnMigrate(true)
+                    .load()
+                    .migrate();
+        } catch (FlywayException e) {
             throw new DatabaseException(e);
         } finally {
             this.lock.unlock();
@@ -66,7 +57,7 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
 
         this.lock.lock();
         try (
-            Connection connection = this.databaseSource.getConnection();
+            Connection connection = this.connectionProvider.getConnection();
             PreparedStatement findNextIdStatement = connection.prepareStatement("SELECT MAX(id) FROM player_mute_punishment;");
             ResultSet nextIdResult = findNextIdStatement.executeQuery()
         ) {
@@ -88,7 +79,7 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
 
         this.lock.lock();
         try (
-            Connection connection = this.databaseSource.getConnection();
+            Connection connection = this.connectionProvider.getConnection();
             PreparedStatement updateByIdStatement = connection.prepareStatement(
                     """
                     INSERT INTO player_mute_punishment (
@@ -138,7 +129,7 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
     public @Nullable Saved<PlayerMutePunishment> findById(int id) throws DatabaseException {
         this.lock.lock();
         try (
-            Connection connection = this.databaseSource.getConnection();
+            Connection connection = this.connectionProvider.getConnection();
             PreparedStatement findByIdStatement = connection.prepareStatement("SELECT * FROM player_mute_punishment WHERE id = ?;")
         ) {
             findByIdStatement.setInt(1, id);
@@ -162,7 +153,7 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
 
         this.lock.lock();
         try (
-            Connection connection = this.databaseSource.getConnection();
+            Connection connection = this.connectionProvider.getConnection();
             PreparedStatement findByTargetStatement = connection.prepareStatement("SELECT * FROM player_mute_punishment WHERE target = ?;")
         ) {
             findByTargetStatement.setObject(1, target);
