@@ -71,6 +71,10 @@ public final class NoonieManagement extends JavaPlugin {
         return this.databaseManager;
     }
 
+    public @NotNull PunishmentManager getPunishmentManager() {
+        return this.punishmentManager;
+    }
+
     private void shutdownWithReason(String... reasons) {
         for (String reason : reasons) {
             super.getLogger().severe(reason);
