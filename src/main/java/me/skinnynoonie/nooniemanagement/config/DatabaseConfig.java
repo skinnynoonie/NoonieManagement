@@ -1,18 +1,22 @@
 package me.skinnynoonie.nooniemanagement.config;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public interface DatabaseConfig extends Config {
     @NotNull String getDatabaseType();
 
-    @Nullable String getHost();
+    @NotNull String getHost();
 
-    @Nullable String getPort();
+    @NotNull String getPort();
 
-    @Nullable String getName();
+    @NotNull String getName();
 
-    @Nullable String getUsername();
+    @NotNull String getUsername();
 
-    @Nullable String getPassword();
+    @NotNull String getPassword();
+
+    @Override
+    default boolean isValid() {
+        return true;
+    }
 }

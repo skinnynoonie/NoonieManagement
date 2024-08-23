@@ -10,4 +10,9 @@ public interface VersionConfig extends Config {
     default boolean isOutdated() {
         return !VERSION.equals(this.getVersion());
     }
+
+    @Override
+    default boolean isValid() {
+        return true;
+    }
 }

@@ -11,6 +11,7 @@ public final class ConfigManager {
     private final NoonieManagement noonieManagement;
     private VersionConfig versionConfig;
     private DatabaseConfig databaseConfig;
+    private MessageConfig messageConfig;
 
     public ConfigManager(@NotNull NoonieManagement noonieManagement) {
         Preconditions.checkArgument(noonieManagement != null, "noonieManagement");
@@ -28,9 +29,8 @@ public final class ConfigManager {
                 return false;
             }
 
-            if (!this.initDatabaseConfig(config, logger)) {
-                return false;
-            }
+            this.databaseConfig = new StandardDatabaseConfig(config);
+            this.messageConfig = new StandardMessageConfig(config);
 
             return true;
         } catch (Exception e) {
@@ -42,28 +42,12 @@ public final class ConfigManager {
 
     private boolean initVersionConfig(ConfigurationSection config, Logger logger) {
         this.versionConfig = new StandardVersionConfig(config);
-        if (this.versionConfig.isNotValid()) {
-            logger.severe("The version configuration is not valid.");
-            logger.severe("The section \"version\" in the configuration may have been accidentally deleted.");
-            return false;
-        } else if (this.versionConfig.isOutdated()) {
+        if (this.versionConfig.isOutdated()) {
             logger.severe("Configuration is outdated!");
             logger.severe("Configuration version is " + this.versionConfig.getVersion() + " but should be " + VersionConfig.VERSION);
             return false;
         } else {
-            logger.info("Successfully loaded the version config.");
-            return true;
-        }
-    }
-
-    private boolean initDatabaseConfig(ConfigurationSection config, Logger logger) {
-        this.databaseConfig = new StandardDatabaseConfig(config);
-        if (this.databaseConfig.isNotValid()) {
-            logger.severe("The database config is not valid.");
-            logger.severe("The section database.type may not have a valid value.");
-            return false;
-        } else {
-            logger.info("Successfully loaded the database config.");
+            logger.info("Configuration version is up to date.");
             return true;
         }
     }

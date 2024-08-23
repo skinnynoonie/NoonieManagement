@@ -14,12 +14,7 @@ public final class StandardVersionConfig implements VersionConfig {
     }
 
     @Override
-    public boolean isValid() {
-        return this.getVersion() != null;
-    }
-
-    @Override
     public @NotNull String getVersion() {
-        return Preconditions.checkNotNull(this.config.getString("version"), "not using config properly, always use isValid() first");
+        return this.config.getString("version", "");
     }
 }

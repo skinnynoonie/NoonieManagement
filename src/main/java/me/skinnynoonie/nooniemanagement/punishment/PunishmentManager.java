@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.NoonieManagement;
 import me.skinnynoonie.nooniemanagement.database.Saved;
 import me.skinnynoonie.nooniemanagement.database.punishment.service.PunishmentService;
+import me.skinnynoonie.nooniemanagement.punishment.history.PlayerMutePunishmentHistory;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
 import me.skinnynoonie.nooniemanagement.util.Duration;
 import org.jetbrains.annotations.NotNull;
@@ -58,5 +59,11 @@ public final class PunishmentManager {
                     punishmentService.savePlayerMute(activeSavedMute);
                     return activeSavedMute;
                 });
+    }
+
+    public CompletableFuture<@NotNull PlayerMutePunishmentHistory> getPlayerMuteHistory(@NotNull  UUID target) {
+        Preconditions.checkArgument(target != null, "target");
+
+        return this.noonieManagement.getPunishmentManager().getPlayerMuteHistory(target);
     }
 }

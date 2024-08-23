@@ -1,5 +1,10 @@
 # The server will be shutdown if this configuration is invalid, outdated, etc.
 
+messages:
+  player-mute: "{issuer} muted {target} for {duration}"
+  player-permanent-mute: "{issuer} muted {target} permanently"
+  player-unmute: "{issuer} unmuted {target}"
+
 database:
   # These are the following supported databases: "POSTGRESQL".
   type:
