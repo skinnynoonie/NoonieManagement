@@ -27,7 +27,7 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
     private final Lock lock;
 
     public PostgreSqlPlayerMutePunishmentRepository(@NotNull PostgreSqlConnectionProvider connectionProvider) {
-        Preconditions.checkArgument(connectionProvider != null, "databaseSource");
+        Preconditions.checkArgument(connectionProvider != null, "connectionProvider");
 
         this.connectionProvider = connectionProvider;
         this.lock = new ReentrantLock();

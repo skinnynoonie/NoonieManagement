@@ -6,10 +6,10 @@ import me.skinnynoonie.nooniemanagement.database.Saved;
 import me.skinnynoonie.nooniemanagement.database.punishment.service.PunishmentService;
 import me.skinnynoonie.nooniemanagement.punishment.history.PlayerMutePunishmentHistory;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
-import me.skinnynoonie.nooniemanagement.util.Duration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -25,6 +25,7 @@ public final class PunishmentManager {
     ) {
         Preconditions.checkArgument(target != null, "target");
         Preconditions.checkArgument(duration != null, "duration");
+        long millis = checkMillisNotOverflows(duration);
 
         PunishmentService punishmentService = this.noonieManagement.getDatabaseManager().getPunishmentService();
         return punishmentService.getPlayerMuteHistory(target)
@@ -34,7 +35,7 @@ public final class PunishmentManager {
                     }
                 })
                 .thenCompose(ignored -> {
-                    PlayerMutePunishment mute = new PlayerMutePunishment(target, issuer, reason, duration.getMillis());
+                    PlayerMutePunishment mute = new PlayerMutePunishment(target, issuer, reason, millis);
                     return punishmentService.savePlayerMute(mute);
                 });
     }
@@ -65,5 +66,13 @@ public final class PunishmentManager {
         Preconditions.checkArgument(target != null, "target");
 
         return this.noonieManagement.getPunishmentManager().getPlayerMuteHistory(target);
+    }
+
+    private static long checkMillisNotOverflows(Duration duration) {
+        try {
+            return duration.toMillis();
+        } catch (ArithmeticException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 }

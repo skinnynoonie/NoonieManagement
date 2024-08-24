@@ -23,6 +23,14 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
     public PlayerMutePunishment(
             @NotNull UUID target,
             @Nullable UUID issuer,
+            @Nullable String reason
+    ) {
+        this(target, issuer, reason, -1);
+    }
+
+    public PlayerMutePunishment(
+            @NotNull UUID target,
+            @Nullable UUID issuer,
             @Nullable String reason,
             long duration
     ) {
