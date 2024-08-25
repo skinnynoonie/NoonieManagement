@@ -60,6 +60,8 @@ public final class PostgreSqlPunishmentService implements PunishmentService {
 
     @Override
     public @NotNull PlayerPunishmentHistory getPlayerHistory(@NotNull UUID target) throws DatabaseException {
+        Preconditions.checkArgument(target != null, "target");
+
         this.lock.lock();
         try {
             return new PlayerPunishmentHistory(
@@ -72,6 +74,8 @@ public final class PostgreSqlPunishmentService implements PunishmentService {
 
     @Override
     public @NotNull PlayerMutePunishmentHistory getPlayerMuteHistory(@NotNull UUID target) throws DatabaseException {
+        Preconditions.checkArgument(target != null, "target");
+
         this.lock.lock();
         try {
             return new PlayerMutePunishmentHistory(this.playerMutePunishmentRepo.findByTarget(target));
@@ -82,6 +86,8 @@ public final class PostgreSqlPunishmentService implements PunishmentService {
 
     @Override
     public @NotNull Saved<PlayerMutePunishment> savePlayerMute(@NotNull PlayerMutePunishment mute) throws DatabaseException {
+        Preconditions.checkArgument(mute != null, "mute");
+
         this.lock.lock();
         try {
             return this.playerMutePunishmentRepo.save(mute);
@@ -92,6 +98,8 @@ public final class PostgreSqlPunishmentService implements PunishmentService {
 
     @Override
     public void savePlayerMute(@NotNull Saved<PlayerMutePunishment> savedMute) throws DatabaseException {
+        Preconditions.checkArgument(savedMute != null, "savedMute");
+
         this.lock.lock();
         try {
             this.playerMutePunishmentRepo.save(savedMute);

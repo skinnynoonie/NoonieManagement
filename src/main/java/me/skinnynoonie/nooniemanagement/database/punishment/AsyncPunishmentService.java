@@ -33,18 +33,26 @@ public final class AsyncPunishmentService {
     }
 
     public CompletableFuture<PlayerPunishmentHistory> getPlayerHistory(@NotNull UUID target) {
+        Preconditions.checkArgument(target != null, "target");
+
         return CompletableFuture.supplyAsync(() -> this.service.getPlayerHistory(target), this.executor);
     }
 
     public CompletableFuture<PlayerMutePunishmentHistory> getPlayerMuteHistory(@NotNull UUID target) {
+        Preconditions.checkArgument(target != null, "target");
+
         return CompletableFuture.supplyAsync(() -> this.service.getPlayerMuteHistory(target), this.executor);
     }
 
     public CompletableFuture<Saved<PlayerMutePunishment>> savePlayerMute(@NotNull PlayerMutePunishment mute) {
+        Preconditions.checkArgument(mute != null, "mute");
+
         return CompletableFuture.supplyAsync(() -> this.service.savePlayerMute(mute), this.executor);
     }
 
     public CompletableFuture<Void> savePlayerMute(@NotNull Saved<PlayerMutePunishment> savedMute) {
+        Preconditions.checkArgument(savedMute != null, "savedMute");
+        
         return CompletableFuture.runAsync(() -> this.service.savePlayerMute(savedMute), this.executor);
     }
 }
