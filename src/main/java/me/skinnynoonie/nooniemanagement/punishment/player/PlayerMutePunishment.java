@@ -7,6 +7,7 @@ import me.skinnynoonie.nooniemanagement.punishment.PardonablePunishment;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
 import java.util.UUID;
 
 public final class PlayerMutePunishment implements PlayerPunishment, PardonablePunishment, DurationalPunishment, ActivePunishment {
@@ -18,21 +19,21 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
     private boolean pardoned;
     private UUID pardoner;
     private String pardonReason;
-    private final long duration;
+    private final Duration duration;
 
     public PlayerMutePunishment(
             @NotNull UUID target,
             @Nullable UUID issuer,
             @Nullable String reason
     ) {
-        this(target, issuer, reason, -1);
+        this(target, issuer, reason, Duration.ofSeconds(-1));
     }
 
     public PlayerMutePunishment(
             @NotNull UUID target,
             @Nullable UUID issuer,
             @Nullable String reason,
-            long duration
+            Duration duration
     ) {
         this(target, issuer, reason, System.currentTimeMillis(), false, null, null, duration);
     }
@@ -45,9 +46,10 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
             boolean pardoned,
             @Nullable UUID pardoner,
             @Nullable String pardonReason,
-            long duration
+            @NotNull Duration duration
     ) {
         Preconditions.checkArgument(target != null, "target");
+        Preconditions.checkArgument(duration != null, "duration");
 
         this.target = target;
         this.issuer = issuer;
@@ -85,7 +87,7 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
     }
 
     @Override
-    public long getDuration() {
+    public Duration getDuration() {
         return this.duration;
     }
 
@@ -115,8 +117,15 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
 
     @Override
     public boolean isActive() {
-        boolean timeActive = this.isPermanent() || this.timeOccurred + this.duration > System.currentTimeMillis();
-        return !this.isPardoned() && timeActive;
+        if (!this.isPardoned()) {
+            if (this.isPermanent()) {
+                return true;
+            } else {
+                return (this.timeOccurred / 1000) + this.duration.toSeconds() > (System.currentTimeMillis() / 1000);
+            }
+        } else {
+            return false;
+        }
     }
 
     @Override

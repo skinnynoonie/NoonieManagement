@@ -6,24 +6,22 @@ import me.skinnynoonie.nooniemanagement.config.DatabaseConfig;
 import me.skinnynoonie.nooniemanagement.database.connection.ConnectionException;
 import me.skinnynoonie.nooniemanagement.database.connection.ConnectionProvider;
 import me.skinnynoonie.nooniemanagement.database.connection.StandardConnectionProviderFactory;
-import me.skinnynoonie.nooniemanagement.database.punishment.service.PunishmentService;
-import me.skinnynoonie.nooniemanagement.database.punishment.service.PunishmentServiceFactory;
-import me.skinnynoonie.nooniemanagement.database.punishment.service.StandardPunishmentServiceFactory;
+import me.skinnynoonie.nooniemanagement.database.punishment.AsyncPunishmentService;
+import me.skinnynoonie.nooniemanagement.database.punishment.PunishmentService;
+import me.skinnynoonie.nooniemanagement.database.punishment.StandardPunishmentServiceFactory;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Logger;
 
 public final class DatabaseManager {
     private final NoonieManagement noonieManagement;
-    private final PunishmentServiceFactory punishmentServiceFactory;
-    private PunishmentService punishmentService;
+    private AsyncPunishmentService asyncPunishmentService;
     private boolean initializedProperly;
 
     public DatabaseManager(@NotNull NoonieManagement noonieManagement) {
         Preconditions.checkArgument(noonieManagement != null, "noonieManagement");
 
         this.noonieManagement = noonieManagement;
-        this.punishmentServiceFactory = new StandardPunishmentServiceFactory();
         this.initializedProperly = false;
     }
 
@@ -45,14 +43,15 @@ public final class DatabaseManager {
                 return false;
             }
 
-            this.punishmentService = new StandardPunishmentServiceFactory().from(connectionProvider);
-            if (this.punishmentService == null) {
+            PunishmentService punishmentService = new StandardPunishmentServiceFactory().from(connectionProvider);
+            if (punishmentService == null) {
                 logger.severe("Unsupported database type provided.");
                 return false;
             }
 
+            this.asyncPunishmentService = new AsyncPunishmentService(punishmentService);
             try {
-                this.punishmentService.init();
+                this.asyncPunishmentService.init();
             } catch (DatabaseException e) {
                 logger.severe("Something went wrong while initializing the database service.");
                 e.printStackTrace();
@@ -76,13 +75,13 @@ public final class DatabaseManager {
         Logger logger = this.noonieManagement.getLogger();
 
         try {
-            this.punishmentService.shutdown();
+            this.asyncPunishmentService.shutdown();
         } catch (Exception e) {
             logger.severe("Failed to shutdown punishment service.");
         }
     }
 
-    public @NotNull PunishmentService getPunishmentService() {
-        return this.punishmentService;
+    public @NotNull AsyncPunishmentService getAsyncPunishmentService() {
+        return this.asyncPunishmentService;
     }
 }

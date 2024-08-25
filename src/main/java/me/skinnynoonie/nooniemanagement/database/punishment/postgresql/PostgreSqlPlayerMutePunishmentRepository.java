@@ -1,14 +1,11 @@
-package me.skinnynoonie.nooniemanagement.database.punishment.repository.postgresql;
+package me.skinnynoonie.nooniemanagement.database.punishment.postgresql;
 
 import com.google.common.base.Preconditions;
-import me.skinnynoonie.nooniemanagement.NoonieManagement;
 import me.skinnynoonie.nooniemanagement.database.DatabaseException;
 import me.skinnynoonie.nooniemanagement.database.Saved;
 import me.skinnynoonie.nooniemanagement.database.connection.PostgreSqlConnectionProvider;
-import me.skinnynoonie.nooniemanagement.database.punishment.repository.PlayerMutePunishmentRepository;
+import me.skinnynoonie.nooniemanagement.database.punishment.PlayerMutePunishmentRepository;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
-import org.flywaydb.core.Flyway;
-import org.flywaydb.core.api.FlywayException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,46 +13,24 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMutePunishmentRepository {
     private final PostgreSqlConnectionProvider connectionProvider;
-    private final Lock lock;
 
     public PostgreSqlPlayerMutePunishmentRepository(@NotNull PostgreSqlConnectionProvider connectionProvider) {
         Preconditions.checkArgument(connectionProvider != null, "connectionProvider");
 
         this.connectionProvider = connectionProvider;
-        this.lock = new ReentrantLock();
-    }
-
-    @Override
-    public void init() throws DatabaseException {
-        this.lock.lock();
-        try {
-            Flyway.configure(NoonieManagement.class.getClassLoader())
-                    .locations("/db/migration/postgresql/player_mute_punishment/")
-                    .dataSource(this.connectionProvider.getSource())
-                    .baselineVersion("0")
-                    .baselineOnMigrate(true)
-                    .load()
-                    .migrate();
-        } catch (FlywayException e) {
-            throw new DatabaseException(e);
-        } finally {
-            this.lock.unlock();
-        }
     }
 
     @Override
     public @NotNull Saved<PlayerMutePunishment> save(@NotNull PlayerMutePunishment mute) {
         Preconditions.checkArgument(mute != null, "mute");
 
-        this.lock.lock();
         try (
             Connection connection = this.connectionProvider.getConnection();
             PreparedStatement findNextIdStatement = connection.prepareStatement("SELECT MAX(id) FROM player_mute_punishment;");
@@ -68,8 +43,6 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
             return savedPunishment;
         } catch (SQLException e) {
             throw new DatabaseException(e);
-        } finally {
-            this.lock.unlock();
         }
     }
 
@@ -77,7 +50,6 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
     public void save(@NotNull Saved<PlayerMutePunishment> savedMute) {
         Preconditions.checkArgument(savedMute != null, "savedMute");
 
-        this.lock.lock();
         try (
             Connection connection = this.connectionProvider.getConnection();
             PreparedStatement updateByIdStatement = connection.prepareStatement(
@@ -116,18 +88,15 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
             updateByIdStatement.setBoolean(6, punishment.isPardoned());
             updateByIdStatement.setObject(7, punishment.getPardoner());
             updateByIdStatement.setString(8, punishment.getPardonReason());
-            updateByIdStatement.setLong(9, punishment.getDuration());
+            updateByIdStatement.setLong(9, punishment.getDuration().toSeconds());
             updateByIdStatement.executeUpdate();
         } catch (SQLException e) {
             throw new DatabaseException(e);
-        } finally {
-            this.lock.unlock();
         }
     }
 
     @Override
     public @Nullable Saved<PlayerMutePunishment> findById(int id) throws DatabaseException {
-        this.lock.lock();
         try (
             Connection connection = this.connectionProvider.getConnection();
             PreparedStatement findByIdStatement = connection.prepareStatement("SELECT * FROM player_mute_punishment WHERE id = ?;")
@@ -142,8 +111,6 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
             }
         } catch (SQLException e) {
             throw new DatabaseException(e);
-        } finally {
-            this.lock.unlock();
         }
     }
 
@@ -151,7 +118,6 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
     public @NotNull List<@NotNull Saved<PlayerMutePunishment>> findByTarget(@NotNull UUID target) throws DatabaseException {
         Preconditions.checkArgument(target != null, "target");
 
-        this.lock.lock();
         try (
             Connection connection = this.connectionProvider.getConnection();
             PreparedStatement findByTargetStatement = connection.prepareStatement("SELECT * FROM player_mute_punishment WHERE target = ?;")
@@ -166,8 +132,6 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
             }
         } catch (SQLException e) {
             throw new DatabaseException(e);
-        } finally {
-            this.lock.unlock();
         }
     }
 
@@ -180,7 +144,7 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
                 resultSet.getBoolean(6),
                 (UUID) resultSet.getObject(7),
                 resultSet.getString(8),
-                resultSet.getLong(9)
+                Duration.ofSeconds(resultSet.getLong(9))
         );
         return new Saved<>(resultSet.getInt(1), mutePunishment);
     }

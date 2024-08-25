@@ -1,4 +1,4 @@
-package me.skinnynoonie.nooniemanagement.database.punishment.service;
+package me.skinnynoonie.nooniemanagement.database.punishment;
 
 import me.skinnynoonie.nooniemanagement.database.connection.ConnectionProvider;
 import org.jetbrains.annotations.NotNull;

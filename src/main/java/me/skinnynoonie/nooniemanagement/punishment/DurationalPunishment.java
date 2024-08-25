@@ -1,9 +1,11 @@
 package me.skinnynoonie.nooniemanagement.punishment;
 
+import java.time.Duration;
+
 public interface DurationalPunishment {
-    long getDuration();
+    Duration getDuration();
 
     default boolean isPermanent() {
-        return this.getDuration() < 0;
+        return this.getDuration().isNegative();
     }
 }

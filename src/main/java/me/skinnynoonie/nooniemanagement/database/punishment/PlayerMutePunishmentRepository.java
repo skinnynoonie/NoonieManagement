@@ -1,4 +1,4 @@
-package me.skinnynoonie.nooniemanagement.database.punishment.repository;
+package me.skinnynoonie.nooniemanagement.database.punishment;
 
 import me.skinnynoonie.nooniemanagement.database.DatabaseException;
 import me.skinnynoonie.nooniemanagement.database.Saved;
@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PlayerMutePunishmentRepository {
-    void init() throws DatabaseException;
-
     @NotNull Saved<PlayerMutePunishment> save(@NotNull PlayerMutePunishment mute) throws DatabaseException;
 
     void save(@NotNull Saved<PlayerMutePunishment> savedMute) throws DatabaseException;

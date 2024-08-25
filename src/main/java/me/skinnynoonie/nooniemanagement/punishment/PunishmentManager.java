@@ -3,7 +3,7 @@ package me.skinnynoonie.nooniemanagement.punishment;
 import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.NoonieManagement;
 import me.skinnynoonie.nooniemanagement.database.Saved;
-import me.skinnynoonie.nooniemanagement.database.punishment.service.PunishmentService;
+import me.skinnynoonie.nooniemanagement.database.punishment.AsyncPunishmentService;
 import me.skinnynoonie.nooniemanagement.punishment.history.PlayerMutePunishmentHistory;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
 import org.jetbrains.annotations.NotNull;
@@ -25,18 +25,17 @@ public final class PunishmentManager {
     ) {
         Preconditions.checkArgument(target != null, "target");
         Preconditions.checkArgument(duration != null, "duration");
-        long millis = checkMillisNotOverflows(duration);
 
-        PunishmentService punishmentService = this.noonieManagement.getDatabaseManager().getPunishmentService();
-        return punishmentService.getPlayerMuteHistory(target)
+        AsyncPunishmentService asyncPunishmentService = this.noonieManagement.getDatabaseManager().getAsyncPunishmentService();
+        return asyncPunishmentService.getPlayerMuteHistory(target)
                 .thenAccept(history -> {
                     if (history.getActiveMute() != null) {
                         throw new PunishmentException(PunishmentException.Reason.ALREADY_PUNISHED);
                     }
                 })
                 .thenCompose(ignored -> {
-                    PlayerMutePunishment mute = new PlayerMutePunishment(target, issuer, reason, millis);
-                    return punishmentService.savePlayerMute(mute);
+                    PlayerMutePunishment mute = new PlayerMutePunishment(target, issuer, reason, duration);
+                    return asyncPunishmentService.savePlayerMute(mute);
                 });
     }
 
@@ -45,8 +44,8 @@ public final class PunishmentManager {
     ) {
         Preconditions.checkArgument(target != null, "target");
 
-        PunishmentService punishmentService = this.noonieManagement.getDatabaseManager().getPunishmentService();
-        return punishmentService.getPlayerMuteHistory(target)
+        AsyncPunishmentService asyncPunishmentService = this.noonieManagement.getDatabaseManager().getAsyncPunishmentService();
+        return asyncPunishmentService.getPlayerMuteHistory(target)
                 .thenApply(history -> {
                     Saved<PlayerMutePunishment> activeSavedMute = history.getActiveMute();
                     if (activeSavedMute == null) {
@@ -57,7 +56,7 @@ public final class PunishmentManager {
                 })
                 .thenApply(activeSavedMute -> {
                     activeSavedMute.get().pardon(pardoner, reason);
-                    punishmentService.savePlayerMute(activeSavedMute);
+                    asyncPunishmentService.savePlayerMute(activeSavedMute);
                     return activeSavedMute;
                 });
     }
@@ -66,13 +65,5 @@ public final class PunishmentManager {
         Preconditions.checkArgument(target != null, "target");
 
         return this.noonieManagement.getPunishmentManager().getPlayerMuteHistory(target);
-    }
-
-    private static long checkMillisNotOverflows(Duration duration) {
-        try {
-            return duration.toMillis();
-        } catch (ArithmeticException e) {
-            throw new IllegalArgumentException(e);
-        }
     }
 }

@@ -59,4 +59,8 @@ public final class ConfigManager {
     public @NotNull DatabaseConfig getDatabaseConfig() {
         return this.databaseConfig;
     }
+
+    public MessageConfig getMessageConfig() {
+        return this.messageConfig;
+    }
 }
