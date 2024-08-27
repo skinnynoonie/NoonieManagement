@@ -5,6 +5,8 @@ import me.skinnynoonie.nooniemanagement.config.DatabaseConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Properties;
+
 public final class ConnectionProviderOptions {
     public static @NotNull ConnectionProviderOptions fromConfig(@NotNull DatabaseConfig config) {
         Preconditions.checkArgument(config != null, "config");
@@ -17,31 +19,24 @@ public final class ConnectionProviderOptions {
                 .setPassword(config.getPassword());
     }
 
-    private String username;
-    private String password;
+    public static @NotNull ConnectionProviderOptions fromProperties(@NotNull Properties properties) {
+        Preconditions.checkArgument(properties != null, "properties");
+
+        return new ConnectionProviderOptions()
+                .setHost(properties.getProperty("database.host"))
+                .setPort(properties.getProperty("database.port"))
+                .setDatabaseName(properties.getProperty("database.name"))
+                .setUsername(properties.getProperty("database.username"))
+                .setPassword(properties.getProperty("database.password"));
+    }
+
     private String host;
     private String port;
     private String databaseName;
+    private String username;
+    private String password;
 
     public ConnectionProviderOptions() {
-    }
-
-    public @Nullable String getUsername() {
-        return this.username;
-    }
-
-    public @NotNull ConnectionProviderOptions setUsername(@Nullable String username) {
-        this.username = username;
-        return this;
-    }
-
-    public @Nullable String getPassword() {
-        return this.password;
-    }
-
-    public @NotNull ConnectionProviderOptions setPassword(@Nullable String password) {
-        this.password = password;
-        return this;
     }
 
     public @Nullable String getHost() {
@@ -68,6 +63,24 @@ public final class ConnectionProviderOptions {
 
     public @NotNull ConnectionProviderOptions setDatabaseName(@Nullable String databaseName) {
         this.databaseName = databaseName;
+        return this;
+    }
+
+    public @Nullable String getUsername() {
+        return this.username;
+    }
+
+    public @NotNull ConnectionProviderOptions setUsername(@Nullable String username) {
+        this.username = username;
+        return this;
+    }
+
+    public @Nullable String getPassword() {
+        return this.password;
+    }
+
+    public @NotNull ConnectionProviderOptions setPassword(@Nullable String password) {
+        this.password = password;
         return this;
     }
 }

@@ -52,7 +52,7 @@ public final class AsyncPunishmentService {
 
     public CompletableFuture<Void> savePlayerMute(@NotNull Saved<PlayerMutePunishment> savedMute) {
         Preconditions.checkArgument(savedMute != null, "savedMute");
-        
+
         return CompletableFuture.runAsync(() -> this.service.savePlayerMute(savedMute), this.executor);
     }
 }
