@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.time.Duration;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -57,84 +58,95 @@ class PostgreSqlPunishmentServiceTest {
     }
 
     @Test
-    @Order(1000)
-    void shutdown_doesNotThrow() {
-        assertDoesNotThrow(service::shutdown);
-    }
-
-    @Test
     @Order(3)
-    void testSavePlayerMute_testGetPlayerHistory_testGetPlayerMuteHistory_worksOnNonNulls() {
-        UUID target = UUID.randomUUID();
-        UUID issuer = UUID.randomUUID();
-        String reason = "reason!";
-        long timeOccurred = System.currentTimeMillis();
-        boolean pardoned = true;
-        UUID pardoner = UUID.randomUUID();
-        String pardonReason = "pardon!";
-        Duration duration = Duration.ofSeconds(1234);
-
+    void testSavePlayerMute__findPlayerMuteById_worksOnNonNulls_returnsClone_incrementsPunishmentsProperly() {
         PlayerMutePunishment muteToSave = new PlayerMutePunishment(
-                target,
-                issuer,
-                reason,
-                timeOccurred,
-                pardoned,
-                pardoner,
-                pardonReason,
-                duration
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                "reason!",
+                System.currentTimeMillis(),
+                true,
+                UUID.randomUUID(),
+                "pardon!",
+                Duration.ofSeconds(1234)
         );
+
         Saved<PlayerMutePunishment> savedMute = service.savePlayerMute(muteToSave);
-        PlayerMutePunishment mute = savedMute.get();
-
         assertEquals(1, savedMute.getId());
-        assertNotSame(muteToSave, savedMute.get()); // They can have the same fields, but not be the same reference.
+        assertNotSame(muteToSave, savedMute.get());
+        assertEquals(muteToSave, savedMute.get());
 
-        assertEquals(target, mute.getTarget());
-        assertEquals(issuer, mute.getIssuer());
-        assertEquals(reason, mute.getReason());
-        assertEquals(timeOccurred, mute.getTimeOccurred());
-        assertEquals(pardoned, mute.isPardoned());
-        assertEquals(pardoner, mute.getPardoner());
-        assertEquals(pardonReason, mute.getPardonReason());
-        assertEquals(duration, mute.getDuration());
+        service.savePlayerMute(new Saved<>(100, muteToSave));
+        Saved<PlayerMutePunishment> savedMuteSkipped98Ids = service.findPlayerMuteById(100);
+        assertNotNull(savedMuteSkipped98Ids);
+        assertEquals(100, savedMuteSkipped98Ids.getId());
+        assertEquals(muteToSave, savedMuteSkipped98Ids.get());
     }
 
     @Test
     @Order(4)
-    void testSavePlayerMute_testGetPlayerHistory_testGetPlayerMuteHistory_worksOnNulls() {
-        UUID target = UUID.randomUUID();
-        UUID issuer = null;
-        String reason = null;
-        long timeOccurred = System.currentTimeMillis();
-        boolean pardoned = false;
-        UUID pardoner = null;
-        String pardonReason = null;
-        Duration duration = Duration.ofSeconds(12341);
+    void testSavePlayerMute_findPlayerMuteById_worksOnNulls_returnsClone_incrementsPunishmentsProperly() {
+        PlayerMutePunishment muteToSave = new PlayerMutePunishment(
+                UUID.randomUUID(),
+                null,
+                null,
+                System.currentTimeMillis(),
+                false,
+                null,
+                null,
+                Duration.ofSeconds(-1)
+        );
 
+        Saved<PlayerMutePunishment> savedMute = service.savePlayerMute(muteToSave);
+        assertEquals(101, savedMute.getId());
+        assertNotSame(muteToSave, savedMute.get());
+        assertEquals(muteToSave, savedMute.get());
+
+        service.savePlayerMute(new Saved<>(200, muteToSave));
+        Saved<PlayerMutePunishment> savedMuteSkipped98Ids = service.findPlayerMuteById(200);
+        assertNotNull(savedMuteSkipped98Ids);
+        assertEquals(200, savedMuteSkipped98Ids.getId());
+        assertEquals(muteToSave, savedMuteSkipped98Ids.get());
+    }
+
+    @Test
+    @Order(5)
+    void testGetPlayerMuteHistory_works_returnsClones() {
+        UUID target = UUID.randomUUID();
         PlayerMutePunishment muteToSave = new PlayerMutePunishment(
                 target,
-                issuer,
-                reason,
-                timeOccurred,
-                pardoned,
-                pardoner,
-                pardonReason,
-                duration
+                UUID.randomUUID(),
+                "reason!",
+                System.currentTimeMillis(),
+                true,
+                UUID.randomUUID(),
+                "pardon!",
+                Duration.ofSeconds(1234)
         );
-        Saved<PlayerMutePunishment> savedMute = service.savePlayerMute(muteToSave);
-        PlayerMutePunishment mute = savedMute.get();
 
-        assertEquals(2, savedMute.getId());
-        assertNotSame(muteToSave, savedMute.get()); // They can have the same fields, but not be the same reference.
+        service.savePlayerMute(muteToSave);
+        service.savePlayerMute(muteToSave);
+        service.savePlayerMute(new Saved<>(300, muteToSave));
 
-        assertEquals(target, mute.getTarget());
-        assertEquals(issuer, mute.getIssuer());
-        assertEquals(reason, mute.getReason());
-        assertEquals(timeOccurred, mute.getTimeOccurred());
-        assertEquals(pardoned, mute.isPardoned());
-        assertEquals(pardoner, mute.getPardoner());
-        assertEquals(pardonReason, mute.getPardonReason());
-        assertEquals(duration, mute.getDuration());
+        Map<Integer, PlayerMutePunishment> muteMap = service.getPlayerMuteHistory(target).getPunishmentsMap();
+        assertEquals(3, muteMap.size());
+        assertTrue(muteMap.containsKey(201));
+        assertTrue(muteMap.containsKey(202));
+        assertTrue(muteMap.containsKey(300));
+
+        assertNotSame(muteToSave, muteMap.get(201));
+        assertEquals(muteToSave, muteMap.get(201));
+
+        assertNotSame(muteToSave, muteMap.get(202));
+        assertEquals(muteToSave, muteMap.get(202));
+
+        assertNotSame(muteToSave, muteMap.get(300));
+        assertEquals(muteToSave, muteMap.get(300));
+    }
+
+    @Test
+    @Order(1000)
+    void shutdown_doesNotThrow() {
+        assertDoesNotThrow(service::shutdown);
     }
 }

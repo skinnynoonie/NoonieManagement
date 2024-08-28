@@ -8,7 +8,7 @@ import me.skinnynoonie.nooniemanagement.database.connection.ConnectionProvider;
 import me.skinnynoonie.nooniemanagement.database.connection.StandardConnectionProviderFactory;
 import me.skinnynoonie.nooniemanagement.database.punishment.AsyncPunishmentService;
 import me.skinnynoonie.nooniemanagement.database.punishment.PunishmentService;
-import me.skinnynoonie.nooniemanagement.database.punishment.StandardPunishmentServiceFactory;
+import me.skinnynoonie.nooniemanagement.database.punishment.factory.StandardPunishmentServiceFactory;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Logger;

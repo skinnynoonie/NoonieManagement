@@ -12,6 +12,7 @@ import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
@@ -59,14 +60,10 @@ public final class PostgreSqlPunishmentService implements PunishmentService {
     }
 
     @Override
-    public @NotNull PlayerPunishmentHistory getPlayerHistory(@NotNull UUID target) throws DatabaseException {
-        Preconditions.checkArgument(target != null, "target");
-
+    public @Nullable Saved<PlayerMutePunishment> findPlayerMuteById(int id) throws DatabaseException {
         this.lock.lock();
         try {
-            return new PlayerPunishmentHistory(
-                    new PlayerMutePunishmentHistory(this.playerMutePunishmentRepo.findByTarget(target))
-            );
+            return this.playerMutePunishmentRepo.findById(id);
         } finally {
             this.lock.unlock();
         }

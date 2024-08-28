@@ -3,9 +3,9 @@ package me.skinnynoonie.nooniemanagement.database.punishment;
 import me.skinnynoonie.nooniemanagement.database.DatabaseException;
 import me.skinnynoonie.nooniemanagement.database.Saved;
 import me.skinnynoonie.nooniemanagement.punishment.history.PlayerMutePunishmentHistory;
-import me.skinnynoonie.nooniemanagement.punishment.history.PlayerPunishmentHistory;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -14,7 +14,7 @@ public interface PunishmentService {
 
     void shutdown() throws DatabaseException;
 
-    @NotNull PlayerPunishmentHistory getPlayerHistory(@NotNull UUID target) throws DatabaseException;
+    @Nullable Saved<PlayerMutePunishment> findPlayerMuteById(int id) throws DatabaseException;
 
     @NotNull PlayerMutePunishmentHistory getPlayerMuteHistory(@NotNull UUID target) throws DatabaseException;
 

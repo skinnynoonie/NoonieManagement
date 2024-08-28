@@ -35,7 +35,11 @@ public final class AsyncPunishmentService {
     public CompletableFuture<PlayerPunishmentHistory> getPlayerHistory(@NotNull UUID target) {
         Preconditions.checkArgument(target != null, "target");
 
-        return CompletableFuture.supplyAsync(() -> this.service.getPlayerHistory(target), this.executor);
+        return CompletableFuture.supplyAsync(() -> {
+            return new PlayerPunishmentHistory(
+                    this.service.getPlayerMuteHistory(target)
+            );
+        }, this.executor);
     }
 
     public CompletableFuture<PlayerMutePunishmentHistory> getPlayerMuteHistory(@NotNull UUID target) {

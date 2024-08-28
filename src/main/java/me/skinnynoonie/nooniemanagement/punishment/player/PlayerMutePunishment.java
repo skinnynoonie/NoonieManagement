@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
+import java.util.Objects;
 import java.util.UUID;
 
 public final class PlayerMutePunishment implements PlayerPunishment, PardonablePunishment, DurationalPunishment, ActivePunishment {
@@ -135,5 +136,19 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return this == o ||
+                o instanceof PlayerMutePunishment that &&
+                this.timeOccurred == that.timeOccurred &&
+                this.pardoned == that.pardoned &&
+                Objects.equals(this.target, that.target) &&
+                Objects.equals(this.issuer, that.issuer) &&
+                Objects.equals(this.reason, that.reason) &&
+                Objects.equals(this.pardoner, that.pardoner) &&
+                Objects.equals(this.pardonReason, that.pardonReason) &&
+                Objects.equals(this.duration, that.duration);
     }
 }

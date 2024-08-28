@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PlayerMutePunishmentRepository {
-    @NotNull Saved<PlayerMutePunishment> save(@NotNull PlayerMutePunishment mute) throws DatabaseException;
-
-    void save(@NotNull Saved<PlayerMutePunishment> savedMute) throws DatabaseException;
-
     @Nullable Saved<PlayerMutePunishment> findById(int id) throws DatabaseException;
 
     @NotNull List<@NotNull Saved<PlayerMutePunishment>> findByTarget(@NotNull UUID target) throws DatabaseException;
+
+    @NotNull Saved<PlayerMutePunishment> save(@NotNull PlayerMutePunishment mute) throws DatabaseException;
+
+    void save(@NotNull Saved<PlayerMutePunishment> savedMute) throws DatabaseException;
 }

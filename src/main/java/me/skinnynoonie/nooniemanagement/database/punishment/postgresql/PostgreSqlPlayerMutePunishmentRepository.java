@@ -28,6 +28,60 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
     }
 
     @Override
+    public @Nullable Saved<PlayerMutePunishment> findById(int id) throws DatabaseException {
+        try (
+                Connection connection = this.connectionProvider.getConnection();
+                PreparedStatement findByIdStatement = connection.prepareStatement("SELECT * FROM player_mute_punishment WHERE id = ?;")
+        ) {
+            findByIdStatement.setInt(1, id);
+            try (ResultSet findByIdResult = findByIdStatement.executeQuery()) {
+                if (findByIdResult.next()) {
+                    return this.resultSetToSavedPlayerMute(findByIdResult);
+                } else {
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    @Override
+    public @NotNull List<@NotNull Saved<PlayerMutePunishment>> findByTarget(@NotNull UUID target) throws DatabaseException {
+        Preconditions.checkArgument(target != null, "target");
+
+        try (
+                Connection connection = this.connectionProvider.getConnection();
+                PreparedStatement findByTargetStatement = connection.prepareStatement("SELECT * FROM player_mute_punishment WHERE target = ?;")
+        ) {
+            findByTargetStatement.setObject(1, target);
+            try (ResultSet findByTargetResult = findByTargetStatement.executeQuery()) {
+                List<Saved<PlayerMutePunishment>> mutePunishments = new ArrayList<>();
+                while (findByTargetResult.next()) {
+                    mutePunishments.add(this.resultSetToSavedPlayerMute(findByTargetResult));
+                }
+                return mutePunishments;
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    private Saved<PlayerMutePunishment> resultSetToSavedPlayerMute(ResultSet resultSet) throws SQLException {
+        PlayerMutePunishment mutePunishment = new PlayerMutePunishment(
+                (UUID) resultSet.getObject(2),
+                (UUID) resultSet.getObject(3),
+                resultSet.getString(4),
+                resultSet.getLong(5),
+                resultSet.getBoolean(6),
+                (UUID) resultSet.getObject(7),
+                resultSet.getString(8),
+                Duration.ofSeconds(resultSet.getLong(9))
+        );
+        return new Saved<>(resultSet.getInt(1), mutePunishment);
+    }
+
+    @Override
     public @NotNull Saved<PlayerMutePunishment> save(@NotNull PlayerMutePunishment mute) {
         Preconditions.checkArgument(mute != null, "mute");
 
@@ -93,59 +147,5 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
         } catch (SQLException e) {
             throw new DatabaseException(e);
         }
-    }
-
-    @Override
-    public @Nullable Saved<PlayerMutePunishment> findById(int id) throws DatabaseException {
-        try (
-            Connection connection = this.connectionProvider.getConnection();
-            PreparedStatement findByIdStatement = connection.prepareStatement("SELECT * FROM player_mute_punishment WHERE id = ?;")
-        ) {
-            findByIdStatement.setInt(1, id);
-            try (ResultSet findByIdResult = findByIdStatement.executeQuery()) {
-                if (findByIdResult.next()) {
-                    return this.resultSetToSavedPlayerMute(findByIdResult);
-                } else {
-                    return null;
-                }
-            }
-        } catch (SQLException e) {
-            throw new DatabaseException(e);
-        }
-    }
-
-    @Override
-    public @NotNull List<@NotNull Saved<PlayerMutePunishment>> findByTarget(@NotNull UUID target) throws DatabaseException {
-        Preconditions.checkArgument(target != null, "target");
-
-        try (
-            Connection connection = this.connectionProvider.getConnection();
-            PreparedStatement findByTargetStatement = connection.prepareStatement("SELECT * FROM player_mute_punishment WHERE target = ?;")
-        ) {
-            findByTargetStatement.setObject(1, target);
-            try (ResultSet findByTargetResult = findByTargetStatement.executeQuery()) {
-                List<Saved<PlayerMutePunishment>> mutePunishments = new ArrayList<>();
-                while (findByTargetResult.next()) {
-                    mutePunishments.add(this.resultSetToSavedPlayerMute(findByTargetResult));
-                }
-                return mutePunishments;
-            }
-        } catch (SQLException e) {
-            throw new DatabaseException(e);
-        }
-    }
-
-    private Saved<PlayerMutePunishment> resultSetToSavedPlayerMute(ResultSet resultSet) throws SQLException {
-        PlayerMutePunishment mutePunishment = new PlayerMutePunishment(
-                (UUID) resultSet.getObject(2),
-                (UUID) resultSet.getObject(3),
-                resultSet.getString(4),
-                resultSet.getLong(5),
-                resultSet.getBoolean(6),
-                (UUID) resultSet.getObject(7),
-                resultSet.getString(8),
-                Duration.ofSeconds(resultSet.getLong(9))
-        );
-        return new Saved<>(resultSet.getInt(1), mutePunishment);
     }
 }
