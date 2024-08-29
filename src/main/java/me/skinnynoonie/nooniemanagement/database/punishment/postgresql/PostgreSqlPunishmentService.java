@@ -7,10 +7,11 @@ import me.skinnynoonie.nooniemanagement.database.Saved;
 import me.skinnynoonie.nooniemanagement.database.connection.PostgreSqlConnectionProvider;
 import me.skinnynoonie.nooniemanagement.database.punishment.PunishmentService;
 import me.skinnynoonie.nooniemanagement.punishment.history.PlayerMutePunishmentHistory;
-import me.skinnynoonie.nooniemanagement.punishment.history.PlayerPunishmentHistory;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
+import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.postgres.PostgresPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +21,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public final class PostgreSqlPunishmentService implements PunishmentService {
     private final PostgreSqlConnectionProvider connectionProvider;
+    private final Jdbi jdbi;
     private final PostgreSqlPlayerMutePunishmentRepository playerMutePunishmentRepo;
     private final Lock lock;
 
@@ -27,7 +29,9 @@ public final class PostgreSqlPunishmentService implements PunishmentService {
         Preconditions.checkArgument(connectionProvider != null, "connectionProvider");
 
         this.connectionProvider = connectionProvider;
-        this.playerMutePunishmentRepo = new PostgreSqlPlayerMutePunishmentRepository(connectionProvider);
+        this.jdbi = Jdbi.create(this.connectionProvider.getSource())
+                .installPlugin(new PostgresPlugin());
+        this.playerMutePunishmentRepo = new PostgreSqlPlayerMutePunishmentRepository(this.jdbi);
         this.lock = new ReentrantLock();
     }
 
