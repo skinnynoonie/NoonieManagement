@@ -63,11 +63,11 @@ class PostgreSqlPunishmentServiceTest {
         PlayerMutePunishment muteToSave = new PlayerMutePunishment(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
-                "reason!",
+                "reason!;;;;;",
                 System.currentTimeMillis(),
                 true,
                 UUID.randomUUID(),
-                "pardon!",
+                "pardon!;;;;;;;",
                 Duration.ofSeconds(1234)
         );
 
@@ -116,11 +116,11 @@ class PostgreSqlPunishmentServiceTest {
         PlayerMutePunishment muteToSave = new PlayerMutePunishment(
                 target,
                 UUID.randomUUID(),
-                "reason!",
+                "reason!;;;;;;;",
                 System.currentTimeMillis(),
                 true,
                 UUID.randomUUID(),
-                "pardon!",
+                "pardon!;;;;;;;;",
                 Duration.ofSeconds(1234)
         );
 
