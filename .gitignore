@@ -114,3 +114,5 @@ run/
 
 #env
 .env
+
+src/test/resources/properties/postgresql/properties.properties
