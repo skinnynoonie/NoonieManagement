@@ -31,13 +31,13 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
     @Override
     public @Nullable Saved<PlayerMutePunishment> findById(int id) throws DatabaseException {
         try {
-            return this.jdbi.withHandle(
-                    handle -> handle.createQuery("SELECT * FROM player_mute_punishment WHERE id = :id;")
-                            .bind("id", id)
-                            .map(this::resultSetToSavedPlayerMute)
-                            .findFirst()
-                            .orElse(null)
-            );
+            return this.jdbi.withHandle(handle -> {
+                return handle.createQuery("SELECT * FROM player_mute_punishment WHERE id = :id;")
+                        .bind("id", id)
+                        .map(this::resultSetToSavedPlayerMute)
+                        .findFirst()
+                        .orElse(null);
+            });
         } catch (JdbiException e) {
             throw new DatabaseException(e);
         }
@@ -48,12 +48,12 @@ public final class PostgreSqlPlayerMutePunishmentRepository implements PlayerMut
         Preconditions.checkArgument(target != null, "target");
 
         try {
-            return this.jdbi.withHandle(
-                    handle -> handle.createQuery("SELECT * FROM player_mute_punishment WHERE target = :target;")
-                            .bind("target", target)
-                            .map(this::resultSetToSavedPlayerMute)
-                            .collectIntoList()
-            );
+            return this.jdbi.withHandle(handle -> {
+                return handle.createQuery("SELECT * FROM player_mute_punishment WHERE target = :target;")
+                        .bind("target", target)
+                        .map(this::resultSetToSavedPlayerMute)
+                        .collectIntoList();
+            });
         } catch (JdbiException e) {
             throw new DatabaseException(e);
         }
