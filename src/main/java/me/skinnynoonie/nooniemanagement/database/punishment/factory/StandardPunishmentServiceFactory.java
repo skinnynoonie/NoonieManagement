@@ -1,8 +1,8 @@
 package me.skinnynoonie.nooniemanagement.database.punishment.factory;
 
 import com.google.common.base.Preconditions;
-import me.skinnynoonie.nooniemanagement.database.connection.ConnectionProvider;
-import me.skinnynoonie.nooniemanagement.database.connection.PostgreSqlConnectionProvider;
+import me.skinnynoonie.nooniemanagement.database.linker.DatabaseLinker;
+import me.skinnynoonie.nooniemanagement.database.linker.PostgreSqlDatabaseLinker;
 import me.skinnynoonie.nooniemanagement.database.punishment.PunishmentService;
 import me.skinnynoonie.nooniemanagement.database.punishment.postgresql.PostgreSqlPunishmentService;
 import org.jetbrains.annotations.NotNull;
@@ -10,11 +10,11 @@ import org.jetbrains.annotations.Nullable;
 
 public final class StandardPunishmentServiceFactory implements PunishmentServiceFactory {
     @Override
-    public @Nullable PunishmentService from(@NotNull ConnectionProvider connectionProvider) {
-        Preconditions.checkArgument(connectionProvider != null, "connectionProvider");
+    public @Nullable PunishmentService from(@NotNull DatabaseLinker databaseLinker) {
+        Preconditions.checkArgument(databaseLinker != null, "databaseLinker");
 
-        if (connectionProvider instanceof PostgreSqlConnectionProvider postgreSqlConnectionProvider) {
-            return new PostgreSqlPunishmentService(postgreSqlConnectionProvider);
+        if (databaseLinker instanceof PostgreSqlDatabaseLinker postgreSqlDatabaseLinker) {
+            return new PostgreSqlPunishmentService(postgreSqlDatabaseLinker);
         } else {
             return null;
         }

@@ -1,8 +1,8 @@
 package me.skinnynoonie.nooniemanagement.database.punishment.postgresql;
 
 import com.google.common.base.Preconditions;
-import me.skinnynoonie.nooniemanagement.database.DatabaseException;
 import me.skinnynoonie.nooniemanagement.database.Saved;
+import me.skinnynoonie.nooniemanagement.database.exception.DatabaseException;
 import me.skinnynoonie.nooniemanagement.database.punishment.PlayerMutePunishmentRepository;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
 import org.jdbi.v3.core.Handle;

@@ -1,6 +1,5 @@
-package me.skinnynoonie.nooniemanagement.database.connection;
+package me.skinnynoonie.nooniemanagement.database.exception;
 
-import me.skinnynoonie.nooniemanagement.database.DatabaseException;
 import org.jetbrains.annotations.Nullable;
 
 public final class ConnectionException extends DatabaseException {

@@ -1,17 +1,17 @@
-package me.skinnynoonie.nooniemanagement.database.connection;
+package me.skinnynoonie.nooniemanagement.database.linker;
 
 import com.google.common.base.Preconditions;
-import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import me.skinnynoonie.nooniemanagement.database.exception.ConnectionException;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public final class PostgreSqlConnectionProvider implements ConnectionProvider {
+public final class PostgreSqlDatabaseLinker implements DatabaseLinker {
     private final HikariDataSource dataSource;
 
-    public PostgreSqlConnectionProvider(@NotNull ConnectionProviderOptions options) throws ConnectionException {
+    public PostgreSqlDatabaseLinker(@NotNull SqlConnectionOptions options) {
         Preconditions.checkArgument(options != null, "options");
         Preconditions.checkArgument(options.getHost() != null, "options.getHost()");
         Preconditions.checkArgument(options.getPort() != null, "options.getPort()");
@@ -25,19 +25,12 @@ public final class PostgreSqlConnectionProvider implements ConnectionProvider {
             throw new UnsupportedOperationException("postgresql driver could not be located");
         }
 
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:postgresql://" + options.getHost() + ":" + options.getPort() + "/" + options.getDatabaseName());
-        config.setUsername(options.getUsername());
-        config.setPassword(options.getPassword());
-
-        try {
-            this.dataSource = new HikariDataSource(config);
-        } catch (Exception e) {
-            throw new ConnectionException(e);
-        }
+        this.dataSource = new HikariDataSource();
+        this.dataSource.setJdbcUrl("jdbc:postgresql://" + options.getHost() + ":" + options.getPort() + "/" + options.getDatabaseName());
+        this.dataSource.setUsername(options.getUsername());
+        this.dataSource.setPassword(options.getPassword());
     }
 
-    @Override
     public @NotNull Connection getConnection() throws ConnectionException {
         try {
             return this.dataSource.getConnection();

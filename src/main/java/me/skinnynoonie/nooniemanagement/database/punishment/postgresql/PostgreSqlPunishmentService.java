@@ -2,13 +2,15 @@ package me.skinnynoonie.nooniemanagement.database.punishment.postgresql;
 
 import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.NoonieManagement;
-import me.skinnynoonie.nooniemanagement.database.DatabaseException;
 import me.skinnynoonie.nooniemanagement.database.Saved;
-import me.skinnynoonie.nooniemanagement.database.connection.PostgreSqlConnectionProvider;
+import me.skinnynoonie.nooniemanagement.database.exception.ConnectionException;
+import me.skinnynoonie.nooniemanagement.database.exception.DatabaseException;
+import me.skinnynoonie.nooniemanagement.database.linker.PostgreSqlDatabaseLinker;
 import me.skinnynoonie.nooniemanagement.database.punishment.PunishmentService;
 import me.skinnynoonie.nooniemanagement.punishment.history.PlayerMutePunishmentHistory;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.CoreErrorCode;
 import org.flywaydb.core.api.FlywayException;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.postgres.PostgresPlugin;
@@ -20,16 +22,16 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public final class PostgreSqlPunishmentService implements PunishmentService {
-    private final PostgreSqlConnectionProvider connectionProvider;
+    private final PostgreSqlDatabaseLinker databaseLinker;
     private final Jdbi jdbi;
     private final PostgreSqlPlayerMutePunishmentRepository playerMutePunishmentRepo;
     private final Lock lock;
 
-    public PostgreSqlPunishmentService(@NotNull PostgreSqlConnectionProvider connectionProvider) {
-        Preconditions.checkArgument(connectionProvider != null, "connectionProvider");
+    public PostgreSqlPunishmentService(@NotNull PostgreSqlDatabaseLinker databaseLinker) {
+        Preconditions.checkArgument(databaseLinker != null, "databaseLinker");
 
-        this.connectionProvider = connectionProvider;
-        this.jdbi = Jdbi.create(this.connectionProvider.getSource())
+        this.databaseLinker = databaseLinker;
+        this.jdbi = Jdbi.create(this.databaseLinker.getSource())
                 .installPlugin(new PostgresPlugin());
         this.playerMutePunishmentRepo = new PostgreSqlPlayerMutePunishmentRepository(this.jdbi);
         this.lock = new ReentrantLock();
@@ -41,13 +43,17 @@ public final class PostgreSqlPunishmentService implements PunishmentService {
         try {
             Flyway.configure(NoonieManagement.class.getClassLoader())
                     .locations("/db/migration/postgresql/")
-                    .dataSource(this.connectionProvider.getSource())
+                    .dataSource(this.databaseLinker.getSource())
                     .baselineVersion("0")
                     .baselineOnMigrate(true)
                     .load()
                     .migrate();
         } catch (FlywayException e) {
-            throw new DatabaseException(e);
+            if (e.getErrorCode() == CoreErrorCode.DB_CONNECTION) {
+                throw new ConnectionException(e);
+            } else {
+                throw new DatabaseException(e);
+            }
         } finally {
             this.lock.unlock();
         }
@@ -57,7 +63,7 @@ public final class PostgreSqlPunishmentService implements PunishmentService {
     public void shutdown() throws DatabaseException {
         this.lock.lock();
         try {
-            this.connectionProvider.getSource().close();
+            this.databaseLinker.getSource().close();
         } finally {
             this.lock.unlock();
         }

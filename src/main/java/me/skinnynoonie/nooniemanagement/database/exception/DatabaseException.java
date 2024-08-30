@@ -1,4 +1,4 @@
-package me.skinnynoonie.nooniemanagement.database;
+package me.skinnynoonie.nooniemanagement.database.exception;
 
 import org.jetbrains.annotations.Nullable;
 

@@ -1,8 +1,8 @@
 package me.skinnynoonie.nooniemanagement.database.punishment.postgresql;
 
 import me.skinnynoonie.nooniemanagement.database.Saved;
-import me.skinnynoonie.nooniemanagement.database.connection.ConnectionProviderOptions;
-import me.skinnynoonie.nooniemanagement.database.connection.PostgreSqlConnectionProvider;
+import me.skinnynoonie.nooniemanagement.database.linker.SqlConnectionOptions;
+import me.skinnynoonie.nooniemanagement.database.linker.PostgreSqlDatabaseLinker;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class PostgreSqlPunishmentServiceTest {
 
-    static PostgreSqlConnectionProvider connectionProvider;
+    static PostgreSqlDatabaseLinker databaseLinker;
     static PostgreSqlPunishmentService service;
 
     @BeforeAll
@@ -34,13 +34,13 @@ class PostgreSqlPunishmentServiceTest {
         InputStream propertyStream = classLoader.getResourceAsStream("properties/postgresql/properties.properties");
         properties.load(new InputStreamReader(propertyStream));
 
-        connectionProvider = new PostgreSqlConnectionProvider(ConnectionProviderOptions.fromProperties(properties));
+        databaseLinker = new PostgreSqlDatabaseLinker(SqlConnectionOptions.fromProperties(properties));
 
         try (
-            Connection connection = connectionProvider.getConnection();
+            Connection connection = databaseLinker.getConnection();
             Statement statement = connection.createStatement()
         ) {
-            statement.execute("DROP SCHEMA IF EXISTS PUBLIC CASCADE; CREATE SCHEMA IF NOT EXISTS PUBLIC;");
+            statement.execute("DROP SCHEMA IF EXISTS PUBLIC CASCADE; CREATE SCHEMA PUBLIC;");
         }
     }
 
@@ -48,7 +48,7 @@ class PostgreSqlPunishmentServiceTest {
     @Order(1)
     void constructor_throwsIfNullArgs_doesNotThrowIfValidArgs() {
         assertThrows(IllegalArgumentException.class, () -> new PostgreSqlPunishmentService(null));
-        assertDoesNotThrow(() -> service = new PostgreSqlPunishmentService(connectionProvider));
+        assertDoesNotThrow(() -> service = new PostgreSqlPunishmentService(databaseLinker));
     }
 
     @Test

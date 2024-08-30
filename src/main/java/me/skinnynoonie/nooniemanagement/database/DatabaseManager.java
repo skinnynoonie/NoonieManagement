@@ -3,9 +3,10 @@ package me.skinnynoonie.nooniemanagement.database;
 import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.NoonieManagement;
 import me.skinnynoonie.nooniemanagement.config.DatabaseConfig;
-import me.skinnynoonie.nooniemanagement.database.connection.ConnectionException;
-import me.skinnynoonie.nooniemanagement.database.connection.ConnectionProvider;
-import me.skinnynoonie.nooniemanagement.database.connection.StandardConnectionProviderFactory;
+import me.skinnynoonie.nooniemanagement.database.exception.DatabaseException;
+import me.skinnynoonie.nooniemanagement.database.exception.ConnectionException;
+import me.skinnynoonie.nooniemanagement.database.linker.DatabaseLinker;
+import me.skinnynoonie.nooniemanagement.database.linker.StandardDatabaseLinkerFactory;
 import me.skinnynoonie.nooniemanagement.database.punishment.AsyncPunishmentService;
 import me.skinnynoonie.nooniemanagement.database.punishment.PunishmentService;
 import me.skinnynoonie.nooniemanagement.database.punishment.factory.StandardPunishmentServiceFactory;
@@ -30,20 +31,13 @@ public final class DatabaseManager {
         try {
             DatabaseConfig databaseConfig = this.noonieManagement.getConfigManager().getDatabaseConfig();
 
-            ConnectionProvider connectionProvider;
-            try {
-                connectionProvider = new StandardConnectionProviderFactory().from(databaseConfig);
-                if (connectionProvider == null) {
-                    logger.severe("Unsupported database type provided.");
-                    return false;
-                }
-            } catch (ConnectionException e) {
-                logger.severe("Something went wrong while connecting to the database.");
-                logger.severe("Assure that the authentication is correct.");
+            DatabaseLinker databaseLinker = new StandardDatabaseLinkerFactory().from(databaseConfig);
+            if (databaseLinker == null) {
+                logger.severe("Unsupported database type provided.");
                 return false;
             }
 
-            PunishmentService punishmentService = new StandardPunishmentServiceFactory().from(connectionProvider);
+            PunishmentService punishmentService = new StandardPunishmentServiceFactory().from(databaseLinker);
             if (punishmentService == null) {
                 logger.severe("Unsupported database type provided.");
                 return false;
@@ -52,6 +46,10 @@ public final class DatabaseManager {
             this.asyncPunishmentService = new AsyncPunishmentService(punishmentService);
             try {
                 this.asyncPunishmentService.init();
+            } catch (ConnectionException e) {
+                logger.severe("Something went wrong while connecting to the database.");
+                logger.severe("Assure that the authentication is correct.");
+                return false;
             } catch (DatabaseException e) {
                 logger.severe("Something went wrong while initializing the database service.");
                 e.printStackTrace();
@@ -78,6 +76,7 @@ public final class DatabaseManager {
             this.asyncPunishmentService.shutdown();
         } catch (Exception e) {
             logger.severe("Failed to shutdown punishment service.");
+            e.printStackTrace();
         }
     }
 

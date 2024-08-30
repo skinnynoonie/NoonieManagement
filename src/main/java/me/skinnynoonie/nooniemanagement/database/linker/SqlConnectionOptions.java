@@ -1,4 +1,4 @@
-package me.skinnynoonie.nooniemanagement.database.connection;
+package me.skinnynoonie.nooniemanagement.database.linker;
 
 import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.config.DatabaseConfig;
@@ -7,11 +7,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Properties;
 
-public final class ConnectionProviderOptions {
-    public static @NotNull ConnectionProviderOptions fromConfig(@NotNull DatabaseConfig config) {
+public final class SqlConnectionOptions {
+    public static @NotNull SqlConnectionOptions fromConfig(@NotNull DatabaseConfig config) {
         Preconditions.checkArgument(config != null, "config");
 
-        return new ConnectionProviderOptions()
+        return new SqlConnectionOptions()
                 .setHost(config.getHost())
                 .setPort(config.getPort())
                 .setDatabaseName(config.getName())
@@ -19,10 +19,10 @@ public final class ConnectionProviderOptions {
                 .setPassword(config.getPassword());
     }
 
-    public static @NotNull ConnectionProviderOptions fromProperties(@NotNull Properties properties) {
+    public static @NotNull SqlConnectionOptions fromProperties(@NotNull Properties properties) {
         Preconditions.checkArgument(properties != null, "properties");
 
-        return new ConnectionProviderOptions()
+        return new SqlConnectionOptions()
                 .setHost(properties.getProperty("database.host"))
                 .setPort(properties.getProperty("database.port"))
                 .setDatabaseName(properties.getProperty("database.name"))
@@ -36,14 +36,14 @@ public final class ConnectionProviderOptions {
     private String username;
     private String password;
 
-    public ConnectionProviderOptions() {
+    public SqlConnectionOptions() {
     }
 
     public @Nullable String getHost() {
         return this.host;
     }
 
-    public @NotNull ConnectionProviderOptions setHost(@Nullable String host) {
+    public @NotNull SqlConnectionOptions setHost(@Nullable String host) {
         this.host = host;
         return this;
     }
@@ -52,7 +52,7 @@ public final class ConnectionProviderOptions {
         return this.port;
     }
 
-    public @NotNull ConnectionProviderOptions setPort(@Nullable String port) {
+    public @NotNull SqlConnectionOptions setPort(@Nullable String port) {
         this.port = port;
         return this;
     }
@@ -61,7 +61,7 @@ public final class ConnectionProviderOptions {
         return this.databaseName;
     }
 
-    public @NotNull ConnectionProviderOptions setDatabaseName(@Nullable String databaseName) {
+    public @NotNull SqlConnectionOptions setDatabaseName(@Nullable String databaseName) {
         this.databaseName = databaseName;
         return this;
     }
@@ -70,7 +70,7 @@ public final class ConnectionProviderOptions {
         return this.username;
     }
 
-    public @NotNull ConnectionProviderOptions setUsername(@Nullable String username) {
+    public @NotNull SqlConnectionOptions setUsername(@Nullable String username) {
         this.username = username;
         return this;
     }
@@ -79,7 +79,7 @@ public final class ConnectionProviderOptions {
         return this.password;
     }
 
-    public @NotNull ConnectionProviderOptions setPassword(@Nullable String password) {
+    public @NotNull SqlConnectionOptions setPassword(@Nullable String password) {
         this.password = password;
         return this;
     }

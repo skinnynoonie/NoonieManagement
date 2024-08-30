@@ -1,7 +1,7 @@
 package me.skinnynoonie.nooniemanagement.database.punishment;
 
-import me.skinnynoonie.nooniemanagement.database.DatabaseException;
 import me.skinnynoonie.nooniemanagement.database.Saved;
+import me.skinnynoonie.nooniemanagement.database.exception.DatabaseException;
 import me.skinnynoonie.nooniemanagement.punishment.history.PlayerMutePunishmentHistory;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
 import org.jetbrains.annotations.NotNull;
