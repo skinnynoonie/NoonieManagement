@@ -7,6 +7,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
+import java.util.UUID;
+import java.util.logging.Logger;
+
 public final class NoonieManagement extends JavaPlugin {
     private static NoonieManagement instance;
     private ConfigManager configManager;
@@ -16,50 +20,65 @@ public final class NoonieManagement extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        Logger logger = super.getLogger();
 
-        super.getLogger().info("===========================================================");
-        super.getLogger().info("Enabling...");
-        super.getLogger().info("");
+        logger.info("===========================================================");
+        logger.info("Enabling...");
+        logger.info("");
 
         try {
             this.configManager = new ConfigManager(this);
-            if (!this.configManager.init()) {
-                this.shutdownWithReason("Shutting down due to invalid configuration.");
-                return;
-            }
-
             this.databaseManager = new DatabaseManager(this);
-            if (!this.databaseManager.init()) {
-                this.shutdownWithReason("Shutting down due to an invalid database.");
-                return;
-            }
-
             this.punishmentManager = new PunishmentManager(this);
 
-            super.getLogger().info("");
-            super.getLogger().info("===========================================================");
+            if (this.configManager.init()) {
+                logger.info("[ConfigManager] Successfully initialized.");
+            } else {
+                logger.severe("[ConfigManager] Failed to initialize.");
+                this.shutdownWithReason("Shutting down due to failed config manager initialization.");
+                return;
+            }
+
+            if (this.databaseManager.init()) {
+                logger.info("[DatabaseManager] Successfully initialized.");
+            } else {
+                logger.severe("[DatabaseManager] Failed to initialize.");
+                this.shutdownWithReason("Shutting down due to failed database manager initialization.");
+                return;
+            }
         } catch (Throwable e) {
-            this.shutdownWithReason("Shutting down due to an exception occurring.");
+            this.shutdownWithReason("Shutting down due to an unexpected exception occurring.");
             e.printStackTrace();
         }
+
+        logger.info("");
+        logger.info("===========================================================");
     }
 
     @Override
     public void onDisable() {
-        super.getLogger().info("Shutting down...");
+        Logger logger = super.getLogger();
+
+        logger.info("===========================================================");
+        logger.info("Disabling...");
+        logger.info("");
 
         try {
-            this.databaseManager.shutdown();
+            if (this.databaseManager.shutdown()) {
+                logger.info("[DatabaseManager] Successfully shutdown.");
+            } else {
+                logger.severe("[DatabaseManager] Failed to shutdown properly.");
+            }
         } catch (Throwable e) {
-            super.getLogger().severe("Something went wrong while shutting down!");
+            logger.severe("Failed to shutdown properly as an unexpected exception occurred.");
             e.printStackTrace();
         }
 
-        super.getLogger().info("");
-        super.getLogger().info("===========================================================");
+        logger.info("");
+        logger.info("===========================================================");
     }
 
-    public static NoonieManagement get() {
+    public static @NotNull NoonieManagement get() {
         return instance;
     }
 

@@ -1,20 +1,15 @@
 package me.skinnynoonie.nooniemanagement.config;
 
-import com.google.common.base.Preconditions;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
-public final class StandardVersionConfig implements VersionConfig {
-    private final ConfigurationSection config;
-
+public final class StandardVersionConfig extends AbstractStandardConfig implements VersionConfig {
     public StandardVersionConfig(@NotNull ConfigurationSection config) {
-        Preconditions.checkArgument(config != null, "config");
-
-        this.config = config;
+        super(config);
     }
 
     @Override
     public @NotNull String getVersion() {
-        return this.config.getString("version", "");
+        return super.config.getString("version", "");
     }
 }

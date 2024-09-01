@@ -3,6 +3,7 @@ package me.skinnynoonie.nooniemanagement.database.linker;
 import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariDataSource;
 import me.skinnynoonie.nooniemanagement.database.exception.ConnectionException;
+import me.skinnynoonie.nooniemanagement.log.HikariCpLogFilter;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
@@ -29,6 +30,7 @@ public final class PostgreSqlDatabaseLinker implements DatabaseLinker {
         this.dataSource.setJdbcUrl("jdbc:postgresql://" + options.getHost() + ":" + options.getPort() + "/" + options.getDatabaseName());
         this.dataSource.setUsername(options.getUsername());
         this.dataSource.setPassword(options.getPassword());
+        HikariCpLogFilter.init();
     }
 
     public @NotNull Connection getConnection() throws ConnectionException {

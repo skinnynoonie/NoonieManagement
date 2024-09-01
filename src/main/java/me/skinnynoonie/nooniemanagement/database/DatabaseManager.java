@@ -17,70 +17,83 @@ import java.util.logging.Logger;
 public final class DatabaseManager {
     private final NoonieManagement noonieManagement;
     private AsyncPunishmentService asyncPunishmentService;
-    private boolean initializedProperly;
+    private boolean legalState;
 
     public DatabaseManager(@NotNull NoonieManagement noonieManagement) {
         Preconditions.checkArgument(noonieManagement != null, "noonieManagement");
 
         this.noonieManagement = noonieManagement;
-        this.initializedProperly = false;
+        this.legalState = false;
     }
 
     public boolean init() {
         Logger logger = this.noonieManagement.getLogger();
         try {
             DatabaseConfig databaseConfig = this.noonieManagement.getConfigManager().getDatabaseConfig();
-
             DatabaseLinker databaseLinker = new StandardDatabaseLinkerFactory().from(databaseConfig);
             if (databaseLinker == null) {
-                logger.severe("Unsupported database type provided.");
+                logger.severe("[DatabaseManager] Unsupported database type provided.");
                 return false;
             }
 
             PunishmentService punishmentService = new StandardPunishmentServiceFactory().from(databaseLinker);
             if (punishmentService == null) {
-                logger.severe("Unsupported database type provided.");
+                logger.severe("[DatabaseManager] Unsupported database type provided.");
                 return false;
             }
+
+            logger.info("[DatabaseManager] Successfully created the punishment service.");
 
             this.asyncPunishmentService = new AsyncPunishmentService(punishmentService);
             try {
                 this.asyncPunishmentService.init();
             } catch (ConnectionException e) {
-                logger.severe("Something went wrong while connecting to the database.");
-                logger.severe("Assure that the authentication is correct.");
+                logger.severe("[DatabaseManager] Something went wrong while connecting to the database.");
+                logger.severe("[DatabaseManager] Assure that the connection authentication are correct.");
+                e.printStackTrace();
                 return false;
             } catch (DatabaseException e) {
-                logger.severe("Something went wrong while initializing the database service.");
+                logger.severe("[DatabaseManager] Something went wrong while initializing the punishment service.");
                 e.printStackTrace();
                 return false;
             }
 
-            this.initializedProperly = true;
+            logger.info("[DatabaseManager] Successfully initialized the punishment service.");
+
+            this.legalState = true;
             return true;
         } catch (Exception e) {
-            logger.severe("Failed to initialize the database.");
+            logger.severe("[DatabaseManager] Failed to initialize because an unexpected exception occurred.");
             e.printStackTrace();
             return false;
         }
     }
 
-    public void shutdown() {
-        if (!this.initializedProperly) {
-            return;
+    public boolean shutdown() {
+        if (!this.legalState) {
+            return true;
         }
 
         Logger logger = this.noonieManagement.getLogger();
 
         try {
             this.asyncPunishmentService.shutdown();
+            return true;
         } catch (Exception e) {
-            logger.severe("Failed to shutdown punishment service.");
+            logger.severe("[DatabaseManager] Failed to shutdown because an unexpected exception occurred.");
             e.printStackTrace();
+            return false;
         }
     }
 
     public @NotNull AsyncPunishmentService getAsyncPunishmentService() {
+        this.throwIfInvalidState();
         return this.asyncPunishmentService;
+    }
+
+    private void throwIfInvalidState() {
+        if (!this.legalState) {
+            throw new IllegalStateException("database manager is in an illegal state");
+        }
     }
 }

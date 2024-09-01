@@ -5,6 +5,13 @@ messages:
   player-permanent-mute: "{issuer} muted {target} permanently"
   player-unmute: "{issuer} unmuted {target}"
 
+permissions:
+  # When ever a target is punished, a log message is announced to all that have these permissions.
+  # Each permission applies to their respective initial punishments, and pardon punishments.
+  # For example, view-player-mute-announces applies to a player getting muted and unmuted.
+  announces:
+    view-player-mute-announces: nooniemanagement.view.mute.announces
+
 database:
   # These are the following supported databases: "POSTGRESQL".
   type:
@@ -14,5 +21,5 @@ database:
   username:
   password:
 
-# Do not change this value manually, it is used to give out of date warnings.
+# Do not change this value manually, it is used to give out-of-date warnings.
 version: 0.0.1

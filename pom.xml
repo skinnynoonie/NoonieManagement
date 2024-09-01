@@ -60,6 +60,10 @@
                                     <pattern>org.flywaydb</pattern>
                                     <shadedPattern>me.skinnynoonie.nooniemanagement.flyway</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>com.zaxxer</pattern>
+                                    <shadedPattern>me.skinnynoonie.nooniemanagement</shadedPattern>
+                                </relocation>
                             </relocations>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
@@ -144,6 +148,12 @@
             <artifactId>junit-jupiter</artifactId>
             <version>5.11.0</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.14.1</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

@@ -46,6 +46,7 @@ public final class PostgreSqlPunishmentService implements PunishmentService {
                     .dataSource(this.databaseLinker.getSource())
                     .baselineVersion("0")
                     .baselineOnMigrate(true)
+                    .loggers()
                     .load()
                     .migrate();
         } catch (FlywayException e) {

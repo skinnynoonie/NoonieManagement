@@ -9,9 +9,11 @@ import java.util.logging.Logger;
 
 public final class ConfigManager {
     private final NoonieManagement noonieManagement;
+    private boolean legalState;
     private VersionConfig versionConfig;
     private DatabaseConfig databaseConfig;
     private MessageConfig messageConfig;
+    private PermissionConfig permissionConfig;
 
     public ConfigManager(@NotNull NoonieManagement noonieManagement) {
         Preconditions.checkArgument(noonieManagement != null, "noonieManagement");
@@ -25,42 +27,90 @@ public final class ConfigManager {
             this.noonieManagement.saveDefaultConfig();
             ConfigurationSection config = this.noonieManagement.getConfig();
 
-            if (!this.initVersionConfig(config, logger)) {
-                return false;
-            }
+            this.legalState = this.loadVersionConfig(config, logger) &&
+                    this.loadDatabaseConfig(config, logger) &&
+                    this.loadMessageConfig(config, logger) &&
+                    this.loadPermissionConfig(config, logger);
 
-            this.databaseConfig = new StandardDatabaseConfig(config);
-            this.messageConfig = new StandardMessageConfig(config);
-
-            return true;
+            return this.legalState;
         } catch (Exception e) {
-            logger.severe("Failed to initialize configuration.");
+            logger.severe("[ConfigManager] Failed to initialize because an unexpected exception occurred.");
             e.printStackTrace();
             return false;
         }
     }
 
-    private boolean initVersionConfig(ConfigurationSection config, Logger logger) {
+    private boolean loadVersionConfig(ConfigurationSection config, Logger logger) {
         this.versionConfig = new StandardVersionConfig(config);
-        if (this.versionConfig.isOutdated()) {
-            logger.severe("Configuration is outdated!");
-            logger.severe("Configuration version is " + this.versionConfig.getVersion() + " but should be " + VersionConfig.VERSION);
+        if (this.versionConfig.isNotValid()) {
+            logger.severe("[ConfigManager] Invalid configuration version.");
+            return false;
+        } else if (this.versionConfig.isOutdated()) {
+            logger.severe("[ConfigManager] Configuration is outdated.");
+            logger.severe("[ConfigManager] Configuration version is " + this.versionConfig.getVersion() + " but should be " + VersionConfig.VERSION);
             return false;
         } else {
-            logger.info("Configuration version is up to date.");
+            logger.info("[ConfigManager] Configuration version is up to date.");
+            return true;
+        }
+    }
+
+    private boolean loadDatabaseConfig(ConfigurationSection config, Logger logger) {
+        this.databaseConfig = new StandardDatabaseConfig(config);
+        if (this.databaseConfig.isNotValid()) {
+            logger.severe("[ConfigManager] Invalid database configuration.");
+            return false;
+        } else {
+            logger.info("[ConfigManager] Loaded the database configuration.");
+            return true;
+        }
+    }
+
+    private boolean loadMessageConfig(ConfigurationSection config, Logger logger) {
+        this.messageConfig = new StandardMessageConfig(config);
+        if (this.messageConfig.isNotValid()) {
+            logger.severe("[ConfigManager] Invalid message configuration.");
+            return false;
+        } else {
+            logger.info("[ConfigManager] Loaded the message configuration.");
+            return true;
+        }
+    }
+
+    private boolean loadPermissionConfig(ConfigurationSection config, Logger logger) {
+        this.permissionConfig = new StandardPermissionConfig(config);
+        if (this.permissionConfig.isNotValid()) {
+            logger.severe("[ConfigManager] Invalid permission configuration.");
+            return false;
+        } else {
+            logger.info("[ConfigManager] Loaded the permission configuration.");
             return true;
         }
     }
 
     public @NotNull VersionConfig getVersionConfig() {
+        this.throwIfInvalidState();
         return this.versionConfig;
     }
 
     public @NotNull DatabaseConfig getDatabaseConfig() {
+        this.throwIfInvalidState();
         return this.databaseConfig;
     }
 
-    public MessageConfig getMessageConfig() {
+    public @NotNull MessageConfig getMessageConfig() {
+        this.throwIfInvalidState();
         return this.messageConfig;
+    }
+
+    public @NotNull PermissionConfig getPermissionConfig() {
+        this.throwIfInvalidState();
+        return this.permissionConfig;
+    }
+
+    private void throwIfInvalidState() {
+        if (!this.legalState) {
+            throw new IllegalStateException("config manager is in an illegal state");
+        }
     }
 }
