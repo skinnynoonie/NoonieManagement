@@ -7,8 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.Duration;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 public final class NoonieManagement extends JavaPlugin {
@@ -49,10 +47,10 @@ public final class NoonieManagement extends JavaPlugin {
         } catch (Throwable e) {
             this.shutdownWithReason("Shutting down due to an unexpected exception occurring.");
             e.printStackTrace();
+        } finally {
+            logger.info("");
+            logger.info("===========================================================");
         }
-
-        logger.info("");
-        logger.info("===========================================================");
     }
 
     @Override

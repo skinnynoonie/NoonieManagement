@@ -1,7 +1,7 @@
 package me.skinnynoonie.nooniemanagement.punishment;
 
 public final class PunishmentException extends RuntimeException {
-    enum Reason {
+    public enum Reason {
         ALREADY_PUNISHED,
         NOT_PUNISHED
     }

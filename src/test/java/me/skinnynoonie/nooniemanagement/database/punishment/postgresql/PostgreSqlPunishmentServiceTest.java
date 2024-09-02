@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class PostgreSqlPunishmentServiceTest {
-
     static PostgreSqlDatabaseLinker databaseLinker;
     static PostgreSqlPunishmentService service;
 

@@ -1,13 +1,20 @@
 package me.skinnynoonie.nooniemanagement.config;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface MessageConfig extends Config {
-    @NotNull String getPlayerMuteMessage(@NotNull String target, @NotNull String issuer, @NotNull String duration);
+    @NotNull String getConsoleName();
 
-    @NotNull String getPermanentPlayerMuteMessage(@NotNull String target, @NotNull String issuer);
+    @NotNull String getPlayerMuteMessage(@NotNull String target, @Nullable String issuer, @NotNull String duration);
 
-    @NotNull String getPlayerUnMuteMessage(@NotNull String target, @NotNull String issuer);
+    @NotNull String getPermanentPlayerMuteMessage(@NotNull String target, @Nullable String issuer);
+
+    @NotNull String getPlayerUnMuteMessage(@NotNull String target, @Nullable String issuer);
+
+    @NotNull String getPlayerAlreadyMutedMessage(@NotNull String target);
+
+    @NotNull String getPlayerNotMutedMessage(@NotNull String target);
 
     @Override
     default boolean isValid() {

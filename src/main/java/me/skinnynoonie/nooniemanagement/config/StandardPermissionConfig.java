@@ -12,4 +12,14 @@ public final class StandardPermissionConfig extends AbstractStandardConfig imple
     public @NotNull String getPlayerMutesAnnouncePermission() {
         return super.config.getString("permissions.announces.view-player-mute-announces", "");
     }
+
+    @Override
+    public @NotNull String getPlayerMuteCommandPermission() {
+        return super.config.getString("permissions.commands.player-mute-command", "");
+    }
+
+    @Override
+    public @NotNull String getPlayerUnMuteCommandPermission() {
+        return super.config.getString("permissions.commands.player-unmute-command", "");
+    }
 }
