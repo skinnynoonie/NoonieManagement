@@ -1,13 +1,13 @@
 # The server will be shutdown if this configuration is invalid, outdated, etc.
 
-messages:
-  console-name: "[CONSOLE]"
-  mute:
-    player-mute: "{issuer} muted {target} for {duration}"
-    player-permanent-mute: "{issuer} muted {target} permanently"
-    player-unmute: "{issuer} unmuted {target}"
-    player-already-muted: "{target} is already muted"
-    player-not-muted: "{target} is not muted"
+database:
+  # These are the following supported databases: "POSTGRESQL".
+  type:
+  host:
+  port:
+  name:
+  username:
+  password:
 
 permissions:
   # When ever a target is punished, a log message is announced to all that have these permissions.
@@ -19,14 +19,14 @@ permissions:
     player-mute-command: "nooniemanagement.mute.player"
     player-unmute-command: "nooniemanagement.unmute.player"
 
-database:
-  # These are the following supported databases: "POSTGRESQL".
-  type:
-  host:
-  port:
-  name:
-  username:
-  password:
+messages:
+  console-name: "[CONSOLE]"
+  mute:
+    player-mute: "{issuer} muted {target} for {duration}"
+    player-permanent-mute: "{issuer} muted {target} permanently"
+    player-unmute: "{issuer} unmuted {target}"
+    player-already-muted: "{target} is already muted"
+    player-not-muted: "{target} is not muted"
 
 # Do not change this value manually, it is used to give out-of-date warnings.
 version: 0.0.1
