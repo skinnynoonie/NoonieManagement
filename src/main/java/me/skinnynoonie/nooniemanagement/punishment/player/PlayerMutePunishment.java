@@ -122,7 +122,7 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
             if (this.isPermanent()) {
                 return true;
             } else {
-                return (this.timeOccurred / 1000) + this.duration.toSeconds() > (System.currentTimeMillis() / 1000);
+                return Math.addExact(this.timeOccurred / 1000, this.duration.toSeconds()) > (System.currentTimeMillis() / 1000);
             }
         } else {
             return false;
