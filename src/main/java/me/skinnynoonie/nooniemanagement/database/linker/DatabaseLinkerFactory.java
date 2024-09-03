@@ -1,6 +1,6 @@
 package me.skinnynoonie.nooniemanagement.database.linker;
 
-import me.skinnynoonie.nooniemanagement.config.DatabaseConfig;
+import me.skinnynoonie.nooniemanagement.config.database.DatabaseConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

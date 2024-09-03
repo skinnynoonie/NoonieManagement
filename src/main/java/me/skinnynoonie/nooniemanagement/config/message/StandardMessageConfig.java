@@ -1,6 +1,8 @@
-package me.skinnynoonie.nooniemanagement.config;
+package me.skinnynoonie.nooniemanagement.config.message;
 
 import com.google.common.base.Preconditions;
+import me.skinnynoonie.nooniemanagement.config.AbstractStandardConfig;
+import me.skinnynoonie.nooniemanagement.config.message.MessageConfig;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

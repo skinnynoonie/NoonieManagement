@@ -1,5 +1,6 @@
-package me.skinnynoonie.nooniemanagement.config;
+package me.skinnynoonie.nooniemanagement.config.message;
 
+import me.skinnynoonie.nooniemanagement.config.Config;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

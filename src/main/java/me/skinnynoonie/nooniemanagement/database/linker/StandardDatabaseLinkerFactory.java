@@ -1,7 +1,7 @@
 package me.skinnynoonie.nooniemanagement.database.linker;
 
 import com.google.common.base.Preconditions;
-import me.skinnynoonie.nooniemanagement.config.DatabaseConfig;
+import me.skinnynoonie.nooniemanagement.config.database.DatabaseConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

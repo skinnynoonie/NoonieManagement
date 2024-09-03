@@ -1,5 +1,6 @@
-package me.skinnynoonie.nooniemanagement.config;
+package me.skinnynoonie.nooniemanagement.config.database;
 
+import me.skinnynoonie.nooniemanagement.config.AbstractStandardConfig;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 

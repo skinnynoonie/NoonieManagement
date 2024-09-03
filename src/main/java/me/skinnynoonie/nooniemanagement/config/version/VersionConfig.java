@@ -1,5 +1,6 @@
-package me.skinnynoonie.nooniemanagement.config;
+package me.skinnynoonie.nooniemanagement.config.version;
 
+import me.skinnynoonie.nooniemanagement.config.Config;
 import org.jetbrains.annotations.NotNull;
 
 public interface VersionConfig extends Config {

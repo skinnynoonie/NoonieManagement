@@ -1,5 +1,6 @@
-package me.skinnynoonie.nooniemanagement.config;
+package me.skinnynoonie.nooniemanagement.config.database;
 
+import me.skinnynoonie.nooniemanagement.config.Config;
 import org.jetbrains.annotations.NotNull;
 
 public interface DatabaseConfig extends Config {

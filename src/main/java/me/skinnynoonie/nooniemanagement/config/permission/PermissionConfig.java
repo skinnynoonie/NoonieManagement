@@ -1,5 +1,6 @@
-package me.skinnynoonie.nooniemanagement.config;
+package me.skinnynoonie.nooniemanagement.config.permission;
 
+import me.skinnynoonie.nooniemanagement.config.Config;
 import org.jetbrains.annotations.NotNull;
 
 public interface PermissionConfig extends Config {

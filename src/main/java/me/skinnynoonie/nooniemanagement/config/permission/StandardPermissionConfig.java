@@ -1,5 +1,7 @@
-package me.skinnynoonie.nooniemanagement.config;
+package me.skinnynoonie.nooniemanagement.config.permission;
 
+import me.skinnynoonie.nooniemanagement.config.AbstractStandardConfig;
+import me.skinnynoonie.nooniemanagement.config.permission.PermissionConfig;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 

@@ -2,7 +2,7 @@ package me.skinnynoonie.nooniemanagement.database;
 
 import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.NoonieManagement;
-import me.skinnynoonie.nooniemanagement.config.DatabaseConfig;
+import me.skinnynoonie.nooniemanagement.config.database.DatabaseConfig;
 import me.skinnynoonie.nooniemanagement.database.exception.DatabaseException;
 import me.skinnynoonie.nooniemanagement.database.exception.ConnectionException;
 import me.skinnynoonie.nooniemanagement.database.linker.DatabaseLinker;
