@@ -19,6 +19,24 @@ permissions:
     player-mute-command: "nooniemanagement.mute.player"
     player-unmute-command: "nooniemanagement.unmute.player"
 
+duration-format:
+  days:
+    identifiers: ["d", "day", "days"]
+    plural: "days"
+    singular: "day"
+  hours:
+    identifiers: ["h", "hr", "hour", "hours"]
+    plural: "hours"
+    singular: "hour"
+  minutes:
+    identifiers: ["m", "min", "minute", "minutes"]
+    plural: "minutes"
+    singular: "minute"
+  seconds:
+    identifiers: ["s", "sec", "second", "seconds"]
+    plural: "seconds"
+    singular: "second"
+
 messages:
   console-name: "[CONSOLE]"
   mute:

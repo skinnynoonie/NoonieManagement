@@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.NoonieManagement;
 import me.skinnynoonie.nooniemanagement.config.database.DatabaseConfig;
 import me.skinnynoonie.nooniemanagement.config.database.StandardDatabaseConfig;
+import me.skinnynoonie.nooniemanagement.config.durationformat.DurationFormatConfig;
+import me.skinnynoonie.nooniemanagement.config.durationformat.StandardDurationFormatConfig;
 import me.skinnynoonie.nooniemanagement.config.message.MessageConfig;
 import me.skinnynoonie.nooniemanagement.config.message.StandardMessageConfig;
 import me.skinnynoonie.nooniemanagement.config.permission.PermissionConfig;
@@ -11,6 +13,7 @@ import me.skinnynoonie.nooniemanagement.config.permission.StandardPermissionConf
 import me.skinnynoonie.nooniemanagement.config.version.StandardVersionConfig;
 import me.skinnynoonie.nooniemanagement.config.version.VersionConfig;
 import org.bukkit.configuration.ConfigurationSection;
+import org.flywaydb.core.api.logging.Log;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Logger;
@@ -22,6 +25,7 @@ public final class ConfigManager {
     private DatabaseConfig databaseConfig;
     private MessageConfig messageConfig;
     private PermissionConfig permissionConfig;
+    private DurationFormatConfig durationFormatConfig;
 
     public ConfigManager(@NotNull NoonieManagement noonieManagement) {
         Preconditions.checkArgument(noonieManagement != null, "noonieManagement");
@@ -91,6 +95,17 @@ public final class ConfigManager {
             return false;
         } else {
             logger.info("[ConfigManager] Loaded the permission configuration.");
+            return true;
+        }
+    }
+
+    private boolean loadDurationFormatConfig(ConfigurationSection config, Logger logger) {
+        this.durationFormatConfig = new StandardDurationFormatConfig(config);
+        if (this.durationFormatConfig.isNotValid()) {
+            logger.severe("[ConfigManager] Invalid duration format configuration.");
+            return false;
+        } else {
+            logger.info("[ConfigManager] Loaded the duration format configuration.");
             return true;
         }
     }
