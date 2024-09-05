@@ -16,9 +16,4 @@ public interface MessageConfig extends Config {
     @NotNull String getPlayerAlreadyMutedMessage(@NotNull String target);
 
     @NotNull String getPlayerNotMutedMessage(@NotNull String target);
-
-    @Override
-    default boolean isValid() {
-        return true;
-    }
 }

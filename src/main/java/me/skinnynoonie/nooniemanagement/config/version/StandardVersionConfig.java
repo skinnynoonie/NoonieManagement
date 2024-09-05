@@ -1,16 +1,26 @@
 package me.skinnynoonie.nooniemanagement.config.version;
 
-import me.skinnynoonie.nooniemanagement.config.AbstractStandardConfig;
+import com.google.common.base.Preconditions;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
-public final class StandardVersionConfig extends AbstractStandardConfig implements VersionConfig {
-    public StandardVersionConfig(@NotNull ConfigurationSection config) {
-        super(config);
+public final class StandardVersionConfig implements VersionConfig {
+    public static StandardVersionConfig from(@NotNull ConfigurationSection config) {
+        Preconditions.checkArgument(config != null, "config");
+
+        return new StandardVersionConfig(config.getString("version"));
+    }
+
+    private final String version;
+
+    public StandardVersionConfig(@NotNull String version) {
+        Preconditions.checkArgument(version != null, "version");
+
+        this.version = version;
     }
 
     @Override
     public @NotNull String getVersion() {
-        return super.config.getString("version", "");
+        return this.version;
     }
 }

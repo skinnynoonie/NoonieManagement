@@ -1,41 +1,76 @@
 package me.skinnynoonie.nooniemanagement.config.database;
 
-import me.skinnynoonie.nooniemanagement.config.AbstractStandardConfig;
+import com.google.common.base.Preconditions;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public final class StandardDatabaseConfig extends AbstractStandardConfig implements DatabaseConfig {
-    public StandardDatabaseConfig(@NotNull ConfigurationSection config) {
-        super(config);
+public final class StandardDatabaseConfig implements DatabaseConfig {
+    public static StandardDatabaseConfig from(@NotNull ConfigurationSection config) {
+        Preconditions.checkArgument(config != null, "config");
+
+        return new StandardDatabaseConfig(
+                config.getString("database.type"),
+                config.getString("database.host"),
+                config.getString("database.port"),
+                config.getString("database.name"),
+                config.getString("database.username"),
+                config.getString("database.password")
+        );
+    }
+
+    private final String type;
+    private final String host;
+    private final String port;
+    private final String name;
+    private final String username;
+    private final String password;
+
+    public StandardDatabaseConfig(
+            @NotNull String type,
+            @Nullable String host,
+            @Nullable String port,
+            @Nullable String name,
+            @Nullable String username,
+            @Nullable String password
+    ) {
+        Preconditions.checkArgument(type != null, "type");
+
+        this.type = type;
+        this.host = host;
+        this.port = port;
+        this.name = name;
+        this.username = username;
+        this.password = password;
     }
 
     @Override
     public @NotNull String getDatabaseType() {
-        return super.config.getString("database.type", "");
+        return this.type;
     }
 
     @Override
-    public @NotNull String getHost() {
-        return super.config.getString("database.host", "");
+    public @Nullable String getPort() {
+        return this.port;
     }
 
     @Override
-    public @NotNull String getPort() {
-        return super.config.getString("database.port", "");
+    public @Nullable String getHost() {
+        return this.host;
     }
 
     @Override
-    public @NotNull String getName() {
-        return super.config.getString("database.name", "");
+    public @Nullable String getName() {
+        return this.name;
     }
 
     @Override
-    public @NotNull String getUsername() {
-        return super.config.getString("database.username", "");
+    public @Nullable String getUsername() {
+        return this.username;
     }
 
     @Override
-    public @NotNull String getPassword() {
-        return super.config.getString("database.password", "");
+    public @Nullable String getPassword() {
+        return this.password;
     }
 }

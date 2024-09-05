@@ -7,9 +7,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public interface DurationFormatConfig extends Config {
-    @NotNull String getPluralForm(TimeUnit timeUnit);
+    @NotNull String getPluralForm(@NotNull TimeUnit timeUnit);
 
-    @NotNull String getSingularForm(TimeUnit timeUnit);
+    @NotNull String getSingularForm(@NotNull TimeUnit timeUnit);
 
-    @NotNull Set<@NotNull String> getIdentifiers(TimeUnit timeUnit);
+    @NotNull Set<@NotNull String> getIdentifiers(@NotNull TimeUnit timeUnit);
 }

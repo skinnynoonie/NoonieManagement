@@ -9,9 +9,4 @@ public interface PermissionConfig extends Config {
     @NotNull String getPlayerMuteCommandPermission();
 
     @NotNull String getPlayerUnMuteCommandPermission();
-
-    @Override
-    default boolean isValid() {
-        return true;
-    }
 }

@@ -9,7 +9,6 @@ public final class StandardDatabaseLinkerFactory implements DatabaseLinkerFactor
     @Override
     public @Nullable DatabaseLinker from(@NotNull DatabaseConfig databaseConfig) {
         Preconditions.checkArgument(databaseConfig != null, "databaseConfig");
-        Preconditions.checkArgument(databaseConfig.isValid(), "databaseConfig not valid");
 
         SqlConnectionOptions options = SqlConnectionOptions.fromConfig(databaseConfig);
         return switch (databaseConfig.getDatabaseType().toUpperCase()) {
