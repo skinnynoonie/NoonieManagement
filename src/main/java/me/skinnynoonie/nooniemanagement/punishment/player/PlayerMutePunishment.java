@@ -130,7 +130,7 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
     }
 
     @Override
-    public PlayerMutePunishment clone() {
+    public @NotNull PlayerMutePunishment clone() {
         try {
             return (PlayerMutePunishment) super.clone();
         } catch (CloneNotSupportedException e) {

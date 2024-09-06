@@ -14,5 +14,5 @@ public interface Punishment extends Cloneable {
 
     long getTimeOccurred();
 
-    Punishment clone();
+    @NotNull Punishment clone();
 }

@@ -76,7 +76,7 @@ public final class PunishmentManager {
                 });
     }
 
-    public CompletableFuture<@NotNull PlayerMutePunishmentHistory> getPlayerMuteHistory(@NotNull  UUID target) {
+    public CompletableFuture<@NotNull PlayerMutePunishmentHistory> getPlayerMuteHistory(@NotNull UUID target) {
         Preconditions.checkArgument(target != null, "target");
 
         return this.databaseManager.getAsyncPunishmentService().getPlayerMuteHistory(target);

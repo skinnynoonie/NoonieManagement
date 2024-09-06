@@ -1,11 +1,12 @@
 package me.skinnynoonie.nooniemanagement.punishment.history;
 
 import com.google.common.base.Preconditions;
-import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
 import me.skinnynoonie.nooniemanagement.database.Saved;
+import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +19,7 @@ public final class PlayerMutePunishmentHistory {
         Preconditions.checkArgument(mutes != null, "mutes");
         Preconditions.checkArgument(!mutes.contains(null), "mutes contains null");
 
-        this.mutes = mutes;
+        this.mutes = new ArrayList<>(mutes);
     }
 
     public @NotNull List<@NotNull Saved<PlayerMutePunishment>> getPunishments() {
