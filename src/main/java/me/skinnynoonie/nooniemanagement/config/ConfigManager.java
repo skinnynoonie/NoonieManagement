@@ -16,21 +16,25 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 public final class ConfigManager {
     private final NoonieManagement noonieManagement;
+    private final Map<Class<?>, Config> configMap;
     private boolean legalState;
-    private VersionConfig versionConfig;
-    private DatabaseConfig databaseConfig;
-    private MessageConfig messageConfig;
-    private PermissionConfig permissionConfig;
-    private DurationFormatConfig durationFormatConfig;
 
     public ConfigManager(@NotNull NoonieManagement noonieManagement) {
         Preconditions.checkArgument(noonieManagement != null, "noonieManagement");
 
         this.noonieManagement = noonieManagement;
+        this.configMap = new ConcurrentHashMap<>();
+        this.legalState = false;
+    }
+
+    private interface StandardConfigFactory<C extends Config> {
+        C from(ConfigurationSection config);
     }
 
     public boolean init() {
@@ -41,11 +45,21 @@ public final class ConfigManager {
                     this.noonieManagement.getDataPath().resolve("config.yml").toFile()
             );
 
-            this.legalState = this.loadVersionConfig(config, logger) &&
-                    this.loadDatabaseConfig(config, logger) &&
-                    this.loadMessageConfig(config, logger) &&
-                    this.loadPermissionConfig(config, logger) &&
-                    this.loadDurationFormatConfig(config, logger);
+            if (this.loadConfig(config, "version", VersionConfig.class, StandardVersionConfig::from)) {
+                VersionConfig versionConfig = (VersionConfig) this.configMap.get(VersionConfig.class);
+                if (versionConfig.isOutdated()) {
+                    logger.severe("[ConfigManager] The latest version is " + VersionConfig.VERSION + " but your version is " + versionConfig.getVersion());
+                    return false;
+                }
+            } else {
+                return false;
+            }
+
+            this.legalState = this.loadConfig(config, "database", DatabaseConfig.class, StandardDatabaseConfig::from) &&
+                    this.loadConfig(config, "permission", PermissionConfig.class, StandardPermissionConfig::from) &&
+                    this.loadConfig(config, "message", MessageConfig.class, StandardMessageConfig::from) &&
+                    this.loadConfig(config, "duration format", DurationFormatConfig.class, StandardDurationFormatConfig::from);
+
             return this.legalState;
         } catch (Exception e) {
             logger.severe("[ConfigManager] Failed to initialize because an unexpected exception occurred.");
@@ -54,100 +68,47 @@ public final class ConfigManager {
         }
     }
 
-    private boolean loadVersionConfig(ConfigurationSection config, Logger logger) {
+    private boolean loadConfig(ConfigurationSection config, String configName, Class<?> configClass, StandardConfigFactory<?> configFactory) {
+        Logger logger = this.noonieManagement.getLogger();
         try {
-            this.versionConfig = StandardVersionConfig.from(config);
-        } catch (Exception e) {
-            logger.severe("[ConfigManager] Invalid version config. Was the version deleted?");
-            e.printStackTrace();
-            return false;
-        }
-        if (this.versionConfig.isOutdated()) {
-            logger.severe("[ConfigManager] Configuration is outdated.");
-            logger.severe("[ConfigManager] Configuration version is " + this.versionConfig.getVersion() + " but should be " + VersionConfig.VERSION);
-            return false;
-        } else {
-            logger.info("[ConfigManager] Configuration version is up to date.");
+            this.configMap.put(configClass, configFactory.from(config));
+            logger.info("[ConfigManager] Successfully loaded the " + configName + " configuration.");
             return true;
-        }
-    }
-
-    private boolean loadDatabaseConfig(ConfigurationSection config, Logger logger) {
-        try {
-            this.databaseConfig = StandardDatabaseConfig.from(config);
         } catch (Exception e) {
-            logger.severe("[ConfigManager] Invalid database configuration.");
+            logger.severe("[ConfigManager] Failed to load the " + configName + " configuration.");
             e.printStackTrace();
             return false;
         }
-        logger.info("[ConfigManager] Loaded the database configuration.");
-        return true;
-    }
-
-    private boolean loadMessageConfig(ConfigurationSection config, Logger logger) {
-        try {
-            this.messageConfig = StandardMessageConfig.from(config);
-        } catch (Exception e) {
-            logger.severe("[ConfigManager] Invalid message configuration.");
-            e.printStackTrace();
-            return false;
-        }
-        logger.info("[ConfigManager] Loaded the message configuration.");
-        return true;
-    }
-
-    private boolean loadPermissionConfig(ConfigurationSection config, Logger logger) {
-        try {
-            this.permissionConfig = StandardPermissionConfig.from(config);
-        } catch (Exception e) {
-            logger.severe("[ConfigManager] Invalid permission configuration.");
-            e.printStackTrace();
-            return false;
-        }
-        logger.info("[ConfigManager] Loaded the permission configuration.");
-        return true;
-    }
-
-    private boolean loadDurationFormatConfig(ConfigurationSection config, Logger logger) {
-        try {
-            this.durationFormatConfig = StandardDurationFormatConfig.from(config);
-        } catch (Exception e) {
-            logger.severe("[ConfigManager] Invalid duration format configuration.");
-            e.printStackTrace();
-            return false;
-        }
-        logger.info("[ConfigManager] Loaded the duration format configuration.");
-        return true;
     }
 
     public @NotNull VersionConfig getVersionConfig() {
         this.throwIfInvalidState();
 
-        return this.versionConfig;
+        return (VersionConfig) this.configMap.get(VersionConfig.class);
     }
 
     public @NotNull DatabaseConfig getDatabaseConfig() {
         this.throwIfInvalidState();
 
-        return this.databaseConfig;
+        return (DatabaseConfig) this.configMap.get(DatabaseConfig.class);
     }
 
     public @NotNull MessageConfig getMessageConfig() {
         this.throwIfInvalidState();
 
-        return this.messageConfig;
+        return (MessageConfig) this.configMap.get(MessageConfig.class);
     }
 
     public @NotNull PermissionConfig getPermissionConfig() {
         this.throwIfInvalidState();
 
-        return this.permissionConfig;
+        return (PermissionConfig) this.configMap.get(PermissionConfig.class);
     }
 
     public @NotNull DurationFormatConfig getDurationFormatConfig() {
         this.throwIfInvalidState();
 
-        return this.durationFormatConfig;
+        return (DurationFormatConfig) this.configMap.get(DurationFormatConfig.class);
     }
 
     private void throwIfInvalidState() {

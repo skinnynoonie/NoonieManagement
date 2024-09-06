@@ -11,7 +11,6 @@ public final class StandardMessageConfig implements MessageConfig {
     public static StandardMessageConfig from(@NotNull ConfigurationSection config) {
         Preconditions.checkArgument(config != null, "config");
 
-        System.out.println(config.getString("messages.mute.player-unmute"));
         return new StandardMessageConfig(
                 config.getString("messages.console-name"),
                 config.getString("messages.mute.player-mute"),

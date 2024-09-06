@@ -80,7 +80,7 @@ public final class StandardDurationFormatConfig implements DurationFormatConfig 
         if (!hasSameKeySet) {
             throw new IllegalArgumentException(argName + " does not support the proper time units");
         } else if (timeUnitMap.containsValue(null)) {
-            throw new IllegalArgumentException(argName + " does should not have null values");
+            throw new IllegalArgumentException(argName + " should not have null values");
         }
     }
 
