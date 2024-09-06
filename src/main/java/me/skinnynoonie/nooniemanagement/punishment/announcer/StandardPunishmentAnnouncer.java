@@ -2,7 +2,6 @@ package me.skinnynoonie.nooniemanagement.punishment.announcer;
 
 import com.google.common.base.Preconditions;
 import me.skinnynoonie.nooniemanagement.NoonieManagement;
-import me.skinnynoonie.nooniemanagement.config.ConfigManager;
 import me.skinnynoonie.nooniemanagement.database.Saved;
 import me.skinnynoonie.nooniemanagement.punishment.Punishment;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
@@ -16,9 +15,7 @@ public final class StandardPunishmentAnnouncer implements PunishmentAnnouncer {
 
     public StandardPunishmentAnnouncer(NoonieManagement noonieManagement) {
         this.announcerMap = new ConcurrentHashMap<>();
-
-        ConfigManager configManager = noonieManagement.getConfigManager();
-        this.announcerMap.put(PlayerMutePunishment.class, new PlayerMutePunishmentAnnouncer(configManager));
+        this.announcerMap.put(PlayerMutePunishment.class, new PlayerMutePunishmentAnnouncer(noonieManagement));
     }
 
     @Override

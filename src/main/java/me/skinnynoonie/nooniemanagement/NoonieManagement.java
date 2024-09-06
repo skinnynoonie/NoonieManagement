@@ -2,6 +2,8 @@ package me.skinnynoonie.nooniemanagement;
 
 import me.skinnynoonie.nooniemanagement.config.ConfigManager;
 import me.skinnynoonie.nooniemanagement.database.DatabaseManager;
+import me.skinnynoonie.nooniemanagement.duration.DurationParser;
+import me.skinnynoonie.nooniemanagement.duration.StandardDurationParser;
 import me.skinnynoonie.nooniemanagement.punishment.PunishmentManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,6 +16,7 @@ public final class NoonieManagement extends JavaPlugin {
     private ConfigManager configManager;
     private DatabaseManager databaseManager;
     private PunishmentManager punishmentManager;
+    private DurationParser durationParser;
 
     @Override
     public void onEnable() {
@@ -26,9 +29,6 @@ public final class NoonieManagement extends JavaPlugin {
 
         try {
             this.configManager = new ConfigManager(this);
-            this.databaseManager = new DatabaseManager(this);
-            this.punishmentManager = new PunishmentManager(this);
-
             if (this.configManager.init()) {
                 logger.info("[ConfigManager] Successfully initialized.");
             } else {
@@ -37,6 +37,9 @@ public final class NoonieManagement extends JavaPlugin {
                 return;
             }
 
+            this.durationParser = new StandardDurationParser(this.configManager.getDurationFormatConfig());
+
+            this.databaseManager = new DatabaseManager(this);
             if (this.databaseManager.init()) {
                 logger.info("[DatabaseManager] Successfully initialized.");
             } else {
@@ -44,6 +47,8 @@ public final class NoonieManagement extends JavaPlugin {
                 this.shutdownWithReason("Shutting down due to failed database manager initialization.");
                 return;
             }
+
+            this.punishmentManager = new PunishmentManager(this);
         } catch (Throwable e) {
             this.shutdownWithReason("Shutting down due to an unexpected exception occurring.");
             e.printStackTrace();
@@ -62,10 +67,12 @@ public final class NoonieManagement extends JavaPlugin {
         logger.info("");
 
         try {
-            if (this.databaseManager.shutdown()) {
-                logger.info("[DatabaseManager] Successfully shutdown.");
-            } else {
-                logger.severe("[DatabaseManager] Failed to shutdown properly.");
+            if (this.databaseManager != null) {
+                if (this.databaseManager.shutdown()) {
+                    logger.info("[DatabaseManager] Successfully shutdown.");
+                } else {
+                    logger.severe("[DatabaseManager] Failed to shutdown properly.");
+                }
             }
         } catch (Throwable e) {
             logger.severe("Failed to shutdown properly as an unexpected exception occurred.");
@@ -90,6 +97,10 @@ public final class NoonieManagement extends JavaPlugin {
 
     public @NotNull PunishmentManager getPunishmentManager() {
         return this.punishmentManager;
+    }
+
+    public @NotNull DurationParser getDurationParser() {
+        return this.durationParser;
     }
 
     private void shutdownWithReason(String... reasons) {

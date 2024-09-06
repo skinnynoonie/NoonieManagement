@@ -70,14 +70,11 @@ public final class DatabaseManager {
     }
 
     public boolean shutdown() {
-        if (!this.legalState) {
-            return true;
-        }
-
         Logger logger = this.noonieManagement.getLogger();
-
         try {
-            this.asyncPunishmentService.shutdown();
+            if (this.asyncPunishmentService != null) {
+                this.asyncPunishmentService.shutdown();
+            }
             return true;
         } catch (Exception e) {
             logger.severe("[DatabaseManager] Failed to shutdown because an unexpected exception occurred.");

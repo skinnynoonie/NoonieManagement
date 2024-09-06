@@ -60,10 +60,12 @@ public final class StandardDurationFormatConfig implements DurationFormatConfig 
         this.timeUnitSingularNames = new ConcurrentHashMap<>(timeUnitSingularNames);
         this.timeUnitIdentifiers = new ConcurrentHashMap<>();
 
-        // Copy all Sets provided in the provided timeUnitIdentifiers variable.
+        // Copy all Sets provided in the provided timeUnitIdentifiers parameter and makes them all lower cases.
         for (TimeUnit timeUnit : timeUnitToConfigTimeName.keySet()) {
             Set<String> set = ConcurrentHashMap.newKeySet();
-            set.addAll(timeUnitIdentifiers.get(timeUnit));
+            for (String identifier : timeUnitIdentifiers.get(timeUnit)) {
+                set.add(identifier.toLowerCase());
+            }
             this.timeUnitIdentifiers.put(timeUnit, set);
         }
 

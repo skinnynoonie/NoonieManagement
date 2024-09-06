@@ -88,7 +88,7 @@ public final class PlayerMutePunishment implements PlayerPunishment, PardonableP
     }
 
     @Override
-    public Duration getDuration() {
+    public @NotNull Duration getDuration() {
         return this.duration;
     }
 

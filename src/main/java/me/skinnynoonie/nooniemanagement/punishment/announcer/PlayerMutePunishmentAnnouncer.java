@@ -1,12 +1,13 @@
 package me.skinnynoonie.nooniemanagement.punishment.announcer;
 
+import me.skinnynoonie.nooniemanagement.NoonieManagement;
 import me.skinnynoonie.nooniemanagement.config.ConfigManager;
 import me.skinnynoonie.nooniemanagement.config.message.MessageConfig;
 import me.skinnynoonie.nooniemanagement.config.permission.PermissionConfig;
 import me.skinnynoonie.nooniemanagement.database.Saved;
+import me.skinnynoonie.nooniemanagement.duration.DurationParser;
 import me.skinnynoonie.nooniemanagement.punishment.Punishment;
 import me.skinnynoonie.nooniemanagement.punishment.player.PlayerMutePunishment;
-import me.skinnynoonie.nooniemanagement.util.DurationUtil;
 import me.skinnynoonie.nooniemanagement.util.PlayerUtil;
 import me.skinnynoonie.nooniemanagement.util.TextUtil;
 import net.kyori.adventure.text.Component;
@@ -15,9 +16,11 @@ import org.jetbrains.annotations.NotNull;
 
 public final class PlayerMutePunishmentAnnouncer implements PunishmentAnnouncer {
     private final ConfigManager configManager;
+    private final DurationParser durationParser;
 
-    public PlayerMutePunishmentAnnouncer(ConfigManager configManager) {
-        this.configManager = configManager;
+    public PlayerMutePunishmentAnnouncer(NoonieManagement noonieManagement) {
+        this.configManager = noonieManagement.getConfigManager();
+        this.durationParser = noonieManagement.getDurationParser();
     }
 
     @Override
@@ -26,16 +29,19 @@ public final class PlayerMutePunishmentAnnouncer implements PunishmentAnnouncer 
             MessageConfig messageConfig = this.configManager.getMessageConfig();
             PermissionConfig permissionConfig = this.configManager.getPermissionConfig();
 
+            String message;
             String target = PlayerUtil.getOfflineName(playerMute.getTarget());
             String issuer = PlayerUtil.getOfflineName(playerMute.getIssuer());
-            String duration = DurationUtil.format(playerMute.getDuration());
-            Component message = TextUtil.text(playerMute.isPermanent() ?
-                    messageConfig.getPermanentPlayerMuteMessage(target, issuer) :
-                    messageConfig.getPlayerMuteMessage(target, issuer, duration)
-            );
+            if (playerMute.isPermanent()) {
+                message = messageConfig.getPermanentPlayerMuteMessage(target, issuer);
+            } else {
+                String duration = this.durationParser.format(playerMute.getDuration());
+                message = messageConfig.getPlayerMuteMessage(target, issuer, duration);
+            }
 
-            Bukkit.broadcast(message, permissionConfig.getPlayerMutesAnnouncePermission());
-            Bukkit.getConsoleSender().sendMessage(message);
+            Component messageComponent = TextUtil.text(message);
+            Bukkit.broadcast(messageComponent, permissionConfig.getPlayerMutesAnnouncePermission());
+            Bukkit.getConsoleSender().sendMessage(messageComponent);
         }
     }
 

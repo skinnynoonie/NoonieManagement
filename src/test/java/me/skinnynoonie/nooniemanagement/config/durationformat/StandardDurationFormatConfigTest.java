@@ -24,19 +24,19 @@ class StandardDurationFormatConfigTest {
                 """
                 duration-format:
                   days:
-                    identifiers: ["d", "day", "days"]
+                    identifiers: ["D", "daY", "dAys"]
                     plural: "days"
                     singular: "day"
                   hours:
-                    identifiers: ["h", "hr", "hour", "hours"]
+                    identifiers: ["h", "hr", "hOur", "hours"]
                     plural: "hours"
                     singular: "hour"
                   minutes:
-                    identifiers: ["m", "min", "minute", "minutes"]
+                    identifiers: ["m", "mIn", "minute", "minutes"]
                     plural: "minutes"
                     singular: "minute"
                   seconds:
-                    identifiers: ["s", "sec", "second", "seconds"]
+                    identifiers: ["s", "sec", "secOnd", "seConds"]
                     plural: "seconds"
                     singular: "second"
                 """
