@@ -14,11 +14,6 @@ public final class PostgreSqlDatabaseLinker implements DatabaseLinker {
 
     public PostgreSqlDatabaseLinker(@NotNull SqlConnectionOptions options) {
         Preconditions.checkArgument(options != null, "options");
-        Preconditions.checkArgument(options.getHost() != null, "options.getHost()");
-        Preconditions.checkArgument(options.getPort() != null, "options.getPort()");
-        Preconditions.checkArgument(options.getDatabaseName() != null, "options.getDatabaseName()");
-        Preconditions.checkArgument(options.getUsername() != null, "options.getUsername()");
-        Preconditions.checkArgument(options.getPassword() != null, "options.getPassword()");
 
         try {
             Class.forName("org.postgresql.Driver");

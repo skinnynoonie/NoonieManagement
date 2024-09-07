@@ -11,76 +11,68 @@ public final class SqlConnectionOptions {
     public static @NotNull SqlConnectionOptions fromConfig(@NotNull DatabaseConfig config) {
         Preconditions.checkArgument(config != null, "config");
 
-        return new SqlConnectionOptions()
-                .setHost(config.getHost())
-                .setPort(config.getPort())
-                .setDatabaseName(config.getName())
-                .setUsername(config.getUsername())
-                .setPassword(config.getPassword());
+        return new SqlConnectionOptions(
+                config.getHost(),
+                config.getPort(),
+                config.getName(),
+                config.getUsername(),
+                config.getPassword()
+        );
     }
 
     public static @NotNull SqlConnectionOptions fromProperties(@NotNull Properties properties) {
         Preconditions.checkArgument(properties != null, "properties");
 
-        return new SqlConnectionOptions()
-                .setHost(properties.getProperty("database.host"))
-                .setPort(properties.getProperty("database.port"))
-                .setDatabaseName(properties.getProperty("database.name"))
-                .setUsername(properties.getProperty("database.username"))
-                .setPassword(properties.getProperty("database.password"));
+        return new SqlConnectionOptions(
+                properties.getProperty("database.host"),
+                properties.getProperty("database.port"),
+                properties.getProperty("database.name"),
+                properties.getProperty("database.username"),
+                properties.getProperty("database.password")
+        );
     }
 
-    private String host;
-    private String port;
-    private String databaseName;
-    private String username;
-    private String password;
+    private final String host;
+    private final String port;
+    private final String databaseName;
+    private final String username;
+    private final String password;
 
-    public SqlConnectionOptions() {
+    public SqlConnectionOptions(
+            @NotNull String host,
+            @NotNull String port,
+            @NotNull String databaseName,
+            @Nullable String username,
+            @Nullable String password
+    ) {
+        Preconditions.checkArgument(host != null, "host");
+        Preconditions.checkArgument(port != null, "port");
+        Preconditions.checkArgument(databaseName != null, "databaseName");
+
+        this.host = host;
+        this.port = port;
+        this.databaseName = databaseName;
+        this.username = username;
+        this.password = password;
     }
 
-    public @Nullable String getHost() {
+    public @NotNull String getHost() {
         return this.host;
     }
 
-    public @NotNull SqlConnectionOptions setHost(@Nullable String host) {
-        this.host = host;
-        return this;
-    }
-
-    public @Nullable String getPort() {
+    public @NotNull String getPort() {
         return this.port;
     }
 
-    public @NotNull SqlConnectionOptions setPort(@Nullable String port) {
-        this.port = port;
-        return this;
-    }
-
-    public @Nullable String getDatabaseName() {
+    public @NotNull String getDatabaseName() {
         return this.databaseName;
-    }
-
-    public @NotNull SqlConnectionOptions setDatabaseName(@Nullable String databaseName) {
-        this.databaseName = databaseName;
-        return this;
     }
 
     public @Nullable String getUsername() {
         return this.username;
     }
 
-    public @NotNull SqlConnectionOptions setUsername(@Nullable String username) {
-        this.username = username;
-        return this;
-    }
-
     public @Nullable String getPassword() {
         return this.password;
-    }
-
-    public @NotNull SqlConnectionOptions setPassword(@Nullable String password) {
-        this.password = password;
-        return this;
     }
 }
